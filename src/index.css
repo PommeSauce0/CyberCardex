@@ -1,0 +1,362 @@
+/* =========================================================================
+ * CyberCardex — système de design « HUD Night City »
+ * ========================================================================= */
+
+:root {
+  /* Néons */
+  --c-yellow: #fcee0a;
+  --c-yellow-dim: rgba(252, 238, 10, 0.14);
+  --c-cyan: #00f0ff;
+  --c-cyan-dim: rgba(0, 240, 255, 0.12);
+  --c-red: #ff003c;
+  --c-magenta: #ff2bd6;
+  --c-danger: #ff5c7a;
+
+  /* Surfaces */
+  --c-bg: #06070a;
+  --c-surface: #0d1015;
+  --c-surface-2: #10131a;
+  --c-surface-3: #151922;
+  --c-border: #262c37;
+  --c-border-soft: #1c212a;
+  --c-border-strong: #3a4250;
+
+  /* Texte */
+  --c-text: #e9eef5;
+  --c-text-soft: #b8c0cc;
+  --c-muted: #7a8494;
+  --c-muted-2: #a0a9b6;
+  --c-ink: #050505;
+
+  /* Typo */
+  --font-display: 'Rajdhani', 'Barlow', system-ui, sans-serif;
+  --font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Coins biseautés (haut-droit + bas-gauche, façon interface Cyberpunk 2077) */
+  --cut: 12px;
+  --cut-color: var(--c-border);
+
+  /* Hauteur de la barre de navigation mobile (safe area incluse) */
+  --nav-height: calc(64px + env(safe-area-inset-bottom));
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--c-bg);
+  -webkit-text-size-adjust: 100%;
+  /* Pas de rectangle coloré au toucher : chaque élément a son propre retour visuel. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Application Android : rien n'est sélectionnable, sauf les champs de saisie. */
+.native-app body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Ni barre de défilement de page, ni dans les bandes qui défilent (versions…). */
+.native-app,
+.native-app * {
+  scrollbar-width: none;
+}
+
+.native-app ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Liens et images ne se « soulèvent » pas au glisser. */
+.native-app :is(a, img) {
+  -webkit-user-drag: none;
+}
+
+/* Partout (site compris) : le texte des boutons et des flèches ne se sélectionne pas. */
+:is(button, .btn, .card-stepper, .back) {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.native-app :is(input, textarea, [contenteditable='true']) {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+body {
+  min-width: 320px;
+  /* Filet de sécurité : jamais de défilement horizontal de toute la page. */
+  overflow-x: clip;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fond (halos + grille) sur un calque fixe : le navigateur le compose une fois pour toutes,
+   alors que « background-attachment: fixed » redessine toute la page à chaque défilement. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(1100px 520px at 85% -8%, rgba(0, 240, 255, 0.09), transparent 62%),
+    radial-gradient(900px 520px at -12% 108%, rgba(255, 0, 60, 0.08), transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px) 0 0 / 44px 44px;
+  pointer-events: none;
+}
+
+/* Lignes de balayage très légères, au-dessus du contenu mais sous la visionneuse. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.16) 0,
+    rgba(0, 0, 0, 0.16) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-cyan);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--c-yellow);
+  color: var(--c-ink);
+}
+
+/* ---------- Coins biseautés ---------- */
+
+.btn,
+.stats-grid,
+.set-card,
+.catalog-tabs,
+.search-filters,
+.progress-list,
+.detail-panel,
+.owned-summary,
+.collection-form,
+.owned-item,
+.settings-section,
+.language-option,
+.import-preview,
+.empty-state,
+.card-viewer-toolbar,
+.card-viewer-close,
+.game-stats > div,
+.wish-button,
+.add-card-button,
+.filters button,
+.card-stepper a,
+.owned-badge,
+.copy-quantity {
+  position: relative;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut))
+  );
+}
+
+/* Trait diagonal sur les coins coupés, pour que la bordure reste continue. */
+.btn::before,
+.btn::after,
+.stats-grid::before,
+.stats-grid::after,
+.set-card::before,
+.set-card::after,
+.catalog-tabs::before,
+.catalog-tabs::after,
+.search-filters::before,
+.search-filters::after,
+.progress-list::before,
+.progress-list::after,
+.detail-panel::before,
+.detail-panel::after,
+.collection-form::before,
+.collection-form::after,
+.owned-item::before,
+.owned-item::after,
+.settings-section::before,
+.settings-section::after,
+.language-option::before,
+.language-option::after,
+.import-preview::before,
+.import-preview::after,
+.empty-state::before,
+.empty-state::after,
+.card-viewer-toolbar::before,
+.card-viewer-toolbar::after,
+.card-viewer-close::before,
+.card-viewer-close::after,
+.game-stats > div::before,
+.game-stats > div::after,
+.wish-button::before,
+.wish-button::after,
+.filters button::before,
+.filters button::after,
+.card-stepper a::before,
+.card-stepper a::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--cut) * 1.4142);
+  height: 1px;
+  background: var(--cut-color);
+  transform-origin: 0 0;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.btn::before,
+.stats-grid::before,
+.set-card::before,
+.catalog-tabs::before,
+.search-filters::before,
+.progress-list::before,
+.detail-panel::before,
+.collection-form::before,
+.owned-item::before,
+.settings-section::before,
+.language-option::before,
+.import-preview::before,
+.empty-state::before,
+.card-viewer-toolbar::before,
+.card-viewer-close::before,
+.game-stats > div::before,
+.wish-button::before,
+.filters button::before,
+.card-stepper a::before {
+  /* Les positions absolues partent de l'intérieur de la bordure alors que la découpe
+     suit le bord extérieur : on compense l'épaisseur de bordure (--bw, 1px par défaut). */
+  top: calc(-1 * var(--bw, 1px));
+  left: calc(100% + var(--bw, 1px) - var(--cut));
+}
+
+.btn::after,
+.stats-grid::after,
+.set-card::after,
+.catalog-tabs::after,
+.search-filters::after,
+.progress-list::after,
+.detail-panel::after,
+.collection-form::after,
+.owned-item::after,
+.settings-section::after,
+.language-option::after,
+.import-preview::after,
+.empty-state::after,
+.card-viewer-toolbar::after,
+.card-viewer-close::after,
+.game-stats > div::after,
+.wish-button::after,
+.filters button::after,
+.card-stepper a::after {
+  top: calc(100% + var(--bw, 1px) - var(--cut));
+  left: calc(-1 * var(--bw-left, var(--bw, 1px)));
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Apparition « glitch » des grands titres. */
+@keyframes glitch-in {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: translateX(-6px);
+  }
+  20% {
+    opacity: 1;
+    clip-path: inset(0 0 60% 0);
+    transform: translateX(4px);
+  }
+  40% {
+    clip-path: inset(40% 0 20% 0);
+    transform: translateX(-3px);
+  }
+  60% {
+    clip-path: inset(10% 0 0 0);
+    transform: translateX(2px);
+  }
+  100% {
+    clip-path: inset(0);
+    transform: none;
+  }
+}
+
+@keyframes holo {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

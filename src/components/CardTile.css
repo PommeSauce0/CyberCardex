@@ -1,0 +1,426 @@
+.cards-grid {
+  --columns: 5;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  align-items: start;
+  gap: 30px 22px;
+}
+
+/* Tailles au choix (réglage « Taille des cartes ») : moins ou plus de colonnes. */
+.cards-grid.size-small {
+  --columns: 7;
+  gap: 20px 14px;
+}
+
+.cards-grid.size-large {
+  --columns: 4;
+}
+
+/* Petites cartes : juste le nom, pour rester lisible. */
+.cards-grid.size-small .card-metadata,
+.cards-grid.size-small .card-subtitle {
+  display: none;
+}
+
+.card-tile {
+  --bracket: transparent;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--c-text);
+  text-align: left;
+  text-decoration: none;
+  outline: none;
+}
+
+.card-placeholder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 744 / 1039;
+  background: radial-gradient(circle at 50% 30%, var(--c-surface-3), var(--c-surface) 70%);
+  transition: transform 160ms ease;
+}
+
+.card-placeholder img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition:
+    filter 200ms ease,
+    opacity 200ms ease;
+}
+
+/* Cadres de visée (4 coins) façon HUD */
+.card-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  background:
+    linear-gradient(var(--bracket), var(--bracket)) top left / 16px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top left / 2px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 16px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 2px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 16px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 2px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 16px 2px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 2px 16px no-repeat;
+  pointer-events: none;
+  transition: inset 160ms ease;
+}
+
+.card-tile.owned {
+  --bracket: rgba(0, 240, 255, 0.75);
+}
+
+.card-tile:hover,
+.card-tile:focus-visible {
+  --bracket: var(--c-yellow);
+}
+
+.card-tile:hover .card-placeholder,
+.card-tile:focus-visible .card-placeholder {
+  transform: translateY(-4px);
+}
+
+.card-tile:hover .card-placeholder::after,
+.card-tile:focus-visible .card-placeholder::after {
+  inset: -9px;
+}
+
+.card-tile.missing .card-placeholder img {
+  opacity: 0.55;
+  filter: grayscale(0.75) brightness(0.7) contrast(1.05);
+}
+
+.card-tile.missing:hover .card-placeholder img,
+.card-tile.missing:focus-visible .card-placeholder img {
+  opacity: 0.9;
+  filter: grayscale(0.2) brightness(0.95);
+}
+
+.owned-badge,
+.wish-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  height: 26px;
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.owned-badge {
+  --cut: 6px;
+  background: var(--c-cyan);
+  color: var(--c-ink);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.6);
+}
+
+.wish-badge {
+  border: 1px solid var(--c-yellow);
+  background: rgba(6, 7, 10, 0.88);
+  color: var(--c-yellow);
+  font-size: 13px;
+}
+
+.foil-badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 2px 7px;
+  background: linear-gradient(110deg, #fcee0a, #00f0ff 25%, #ff2bd6 50%, #fcee0a 75%, #00f0ff);
+  background-size: 200% 100%;
+  color: var(--c-ink);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Reflet animé seulement au survol : des dizaines d'animations permanentes pèsent sur mobile. */
+.card-tile:hover .foil-badge {
+  animation: holo 3.5s linear infinite;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-top: 12px;
+}
+
+.card-name {
+  display: -webkit-box;
+  min-height: 2.3em;
+  overflow: hidden;
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  transition: color 120ms ease;
+}
+
+.card-tile:hover .card-name {
+  color: var(--c-yellow);
+}
+
+.card-subtitle {
+  display: block;
+  min-height: 1.45em;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--c-text-soft);
+  font-size: 13px;
+  line-height: 1.45;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.card-subtitle.empty {
+  visibility: hidden;
+}
+
+.card-metadata {
+  display: block;
+  min-height: 1.4em;
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.card-tile.owned .card-metadata {
+  color: var(--c-cyan);
+}
+
+.card-image-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  padding: 14px;
+  border: 1px dashed var(--c-border-strong);
+  text-align: center;
+}
+
+.fallback-number {
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.fallback-name {
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.fallback-subtitle {
+  color: var(--c-muted-2);
+  font-size: 11px;
+}
+
+.wishlist-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Exemplaires possédés dans d'autres versions de la carte. */
+.wishlist-owned {
+  margin: 0;
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Prix (Cardmarket) + Retirer, côte à côte sous la carte. */
+.wishlist-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.wishlist-price,
+.wishlist-remove {
+  min-height: 34px;
+  padding: 0 8px;
+  font-size: 13px;
+}
+
+@media (max-width: 1000px) {
+  .cards-grid {
+    --columns: 4;
+  }
+
+  .cards-grid.size-small {
+    --columns: 6;
+  }
+
+  .cards-grid.size-large {
+    --columns: 3;
+  }
+}
+
+@media (max-width: 760px) {
+  .cards-grid {
+    --columns: 3;
+    gap: 24px 14px;
+  }
+
+  .cards-grid.size-small {
+    --columns: 4;
+    gap: 16px 10px;
+  }
+
+  .cards-grid.size-large {
+    --columns: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .cards-grid {
+    --columns: 2;
+    gap: 24px 14px;
+  }
+
+  .cards-grid.size-small {
+    --columns: 3;
+    gap: 16px 10px;
+  }
+
+  .cards-grid.size-large {
+    --columns: 1;
+    padding: 0 8%;
+  }
+
+  .card-name {
+    font-size: 14px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+  }
+
+  .card-metadata {
+    font-size: 9px;
+  }
+
+  .card-placeholder::after {
+    inset: -4px;
+  }
+}
+
+/* Écran tactile : pas de survol, juste un léger enfoncement pendant l'appui. */
+@media (hover: none) {
+  .card-tile:active {
+    --bracket: var(--c-yellow);
+  }
+
+  .card-tile:active .card-placeholder {
+    transform: scale(0.97);
+  }
+}
+
+/* ---------- Mode ajout rapide ---------- */
+
+.card-tile-quick {
+  position: relative;
+  min-width: 0;
+}
+
+.card-tile.quick {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: copy;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-tile.quick .card-placeholder {
+  outline: 1px dashed rgba(252, 238, 10, 0.35);
+  outline-offset: 3px;
+}
+
+.card-tile.quick:active .card-placeholder {
+  transform: scale(0.97);
+}
+
+/* « +1 » qui monte et disparaît à chaque ajout (clé = quantité). */
+.quick-pulse {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(252, 238, 10, 0.8);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: quick-pulse 700ms ease-out;
+}
+
+.card-tile.missing.quick .quick-pulse,
+.card-tile.quick:not(.owned) .quick-pulse {
+  animation: none;
+}
+
+@keyframes quick-pulse {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 10px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -40px) scale(1.2);
+  }
+}
+
+.quick-decrement {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--c-red);
+  background: rgba(6, 7, 10, 0.9);
+  color: var(--c-red);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.quick-decrement:hover {
+  background: var(--c-red);
+  color: #fff;
+}

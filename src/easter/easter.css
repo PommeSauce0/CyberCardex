@@ -1,0 +1,898 @@
+/* ================= Easter eggs ================= */
+
+/* ---------- Toasts ---------- */
+
+.ee-toasts {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: 50%;
+  z-index: 1200;
+  display: grid;
+  gap: 8px;
+  width: min(92vw, 380px);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.ee-toast {
+  --tone: var(--c-yellow);
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border: 1px solid var(--tone);
+  border-left-width: 4px;
+  background: var(--c-bg);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--tone) 35%, transparent);
+  animation:
+    ee-toast-in 260ms steps(4, end),
+    ee-toast-out 300ms ease-in 3.5s forwards;
+}
+
+.ee-toast.cyan {
+  --tone: var(--c-cyan);
+}
+
+.ee-toast.red {
+  --tone: var(--c-red);
+}
+
+.ee-toast small {
+  color: var(--tone);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ee-toast strong {
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.ee-toast span {
+  color: var(--c-text-soft);
+  font-size: 13px;
+}
+
+@keyframes ee-toast-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) skewX(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ee-toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* ---------- Série complète : « Braindance complete » ---------- */
+
+.ee-braindance {
+  position: fixed;
+  inset: 0;
+  z-index: 1180;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  padding: 24px;
+  border: 0;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 0, 60, 0.08) 0 2px, transparent 2px 4px),
+    radial-gradient(circle at 50% 45%, rgba(255, 0, 60, 0.22), transparent 65%), #040507;
+  color: var(--c-text);
+  text-align: center;
+  cursor: pointer;
+  animation:
+    ee-bd-in 420ms steps(6, end),
+    ee-bd-out 400ms ease-in 4.8s forwards;
+}
+
+.ee-braindance-kicker {
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.ee-braindance-title {
+  position: relative;
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: clamp(38px, 11vw, 92px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-shadow:
+    -3px 0 rgba(255, 0, 60, 0.8),
+    3px 0 rgba(0, 240, 255, 0.7);
+}
+
+/* Copie décalée qui clignote : effet glitch. */
+.ee-braindance-title::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--c-cyan);
+  clip-path: inset(40% 0 45% 0);
+  transform: translateX(6px);
+  animation: ee-glitch-slice 900ms steps(2, end) infinite;
+}
+
+.ee-braindance-set {
+  color: var(--c-text-soft);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.ee-braindance-bar {
+  position: relative;
+  width: min(80vw, 420px);
+  height: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ee-braindance-bar i {
+  position: absolute;
+  inset: 0;
+  background: var(--c-yellow);
+  box-shadow: 0 0 16px var(--c-yellow);
+  transform-origin: left;
+  animation: ee-bd-bar 1.4s cubic-bezier(0.6, 0, 0.2, 1) both;
+}
+
+.ee-braindance-percent {
+  color: var(--c-yellow);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+}
+
+@keyframes ee-bd-in {
+  0% {
+    opacity: 0;
+    clip-path: inset(48% 0 48% 0);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+
+@keyframes ee-bd-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes ee-bd-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes ee-glitch-slice {
+  0% {
+    clip-path: inset(40% 0 45% 0);
+    transform: translateX(6px);
+  }
+  50% {
+    clip-path: inset(10% 0 70% 0);
+    transform: translateX(-5px);
+  }
+  100% {
+    clip-path: inset(70% 0 8% 0);
+    transform: translateX(4px);
+  }
+}
+
+/* ---------- Mode Braindance (7 appuis sur le logo) ---------- */
+
+.braindance-mode body::after {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 0, 60, 0.18) 0,
+    rgba(255, 0, 60, 0.18) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 1;
+}
+
+.ee-braindance-mode {
+  position: fixed;
+  inset: 0;
+  z-index: 890;
+  background: radial-gradient(circle at 50% 40%, transparent 30%, rgba(255, 0, 60, 0.22));
+  box-shadow: inset 0 0 0 2px rgba(255, 0, 60, 0.5);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: ee-flicker 3.2s steps(1, end) infinite;
+}
+
+.ee-rec {
+  position: absolute;
+  bottom: calc(var(--nav-height) + 12px);
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: rgba(6, 7, 10, 0.85);
+  color: var(--c-red);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.ee-rec i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-red);
+  box-shadow: 0 0 10px var(--c-red);
+  animation: ee-blink 1s steps(1, end) infinite;
+}
+
+@keyframes ee-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  47% {
+    opacity: 0.6;
+  }
+  49% {
+    opacity: 1;
+  }
+  83% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes ee-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Glitch court (Johnny Silverhand, Blackwall) ---------- */
+
+.ee-glitch {
+  animation: ee-glitch 700ms steps(1, end);
+}
+
+@keyframes ee-glitch {
+  0% {
+    transform: translateX(-6px) skewX(8deg);
+    filter: hue-rotate(90deg) saturate(2);
+    clip-path: inset(10% 0 55% 0);
+  }
+  12% {
+    transform: translateX(8px);
+    filter: none;
+    clip-path: inset(50% 0 5% 0);
+  }
+  24% {
+    transform: translateX(-3px) skewX(-6deg);
+    filter: invert(0.85) hue-rotate(160deg);
+    clip-path: none;
+  }
+  36% {
+    transform: translateX(5px);
+    filter: drop-shadow(-4px 0 rgba(255, 0, 60, 0.9)) drop-shadow(4px 0 rgba(0, 240, 255, 0.9));
+  }
+  60% {
+    transform: none;
+    filter: saturate(0) brightness(1.4);
+  }
+  72%,
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Réplique de Johnny, façon sous-titre de relic. */
+.ee-quote {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--nav-height) + 18px);
+  z-index: 1100;
+  width: min(90vw, 460px);
+  padding: 12px 16px;
+  border-left: 3px solid var(--c-red);
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation:
+    ee-toast-in 300ms steps(5, end),
+    ee-toast-out 400ms ease-in 3.2s forwards;
+}
+
+.ee-quote small {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--c-red);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 761px) {
+  .ee-quote {
+    bottom: 28px;
+  }
+}
+
+/* ---------- Dates anniversaires (accueil) ---------- */
+
+.ee-date-banner {
+  --tone: var(--c-yellow);
+  display: grid;
+  gap: 2px;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  border: 1px solid var(--tone);
+  border-left-width: 4px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--tone) 14%, transparent),
+    transparent 70%
+  );
+}
+
+.ee-date-banner.cyan {
+  --tone: var(--c-cyan);
+}
+
+.ee-date-banner small {
+  color: var(--tone);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ee-date-banner strong {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ee-date-banner span {
+  color: var(--c-text-soft);
+  font-size: 14px;
+}
+
+/* Le titre de la fiche a déjà sa propre animation d'entrée : on la remplace. */
+.card-heading h1.ee-glitch,
+.card-artwork-large.ee-glitch {
+  animation: ee-glitch 700ms steps(1, end);
+}
+
+/* « ✓ Série complète » : rejoue l'animation Braindance. */
+.ee-replay {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px dashed currentColor;
+  background: none;
+  color: var(--c-yellow);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Recherche : « breathtaking » ---------- */
+
+.ee-breathtaking {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--c-yellow);
+  background: linear-gradient(90deg, var(--c-yellow-dim), transparent 75%);
+  animation: ee-toast-in 300ms steps(4, end);
+}
+
+.ee-breathtaking small {
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ee-breathtaking strong {
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* ---------- Recherche : « Blackwall » ---------- */
+
+.ee-blackwall-breach {
+  position: fixed;
+  inset: 0;
+  z-index: 1150;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 0, 60, 0.35) 0 2px, transparent 2px 5px),
+    rgba(20, 0, 4, 0.82);
+  pointer-events: none;
+  animation: ee-glitch 1.2s steps(1, end);
+}
+
+.ee-blackwall-breach strong {
+  color: var(--c-red);
+  font-family: var(--font-mono);
+  font-size: clamp(18px, 5vw, 34px);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-shadow: 0 0 18px var(--c-red);
+  overflow-wrap: anywhere;
+}
+
+.ee-blackwall {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 28px 22px;
+  border: 1px solid var(--c-red);
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 0, 60, 0.06) 0 1px, transparent 1px 4px), #0a0204;
+  text-align: center;
+  animation: ee-toast-in 360ms steps(5, end);
+}
+
+.ee-blackwall small {
+  color: var(--c-red);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.ee-blackwall strong {
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-shadow:
+    -2px 0 rgba(255, 0, 60, 0.7),
+    2px 0 rgba(0, 240, 255, 0.4);
+}
+
+.ee-blackwall span {
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ---------- Edgerunners : Adam Smasher tombe sur Rebecca ---------- */
+
+/* Chronologie : l'impact a lieu à 1,5 s, le texte arrive à 2,4 s, fin à 6,2 s. */
+.ee-edgerunners {
+  --card-w: min(46vw, 230px);
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  width: 100%;
+  padding: 24px;
+  overflow: hidden;
+  border: 0;
+  background: radial-gradient(circle at 50% 42%, rgba(255, 0, 60, 0.16), transparent 60%), #030406;
+  color: var(--c-text);
+  cursor: pointer;
+  animation:
+    ee-er-fade-in 300ms ease-out both,
+    ee-bd-out 500ms ease-in 5.7s forwards;
+}
+
+.ee-er-warning {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 24px);
+  color: var(--c-red);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: ee-er-warning 1.2s steps(1, end) 0.2s both;
+}
+
+.ee-er-stage {
+  position: relative;
+  width: var(--card-w);
+  aspect-ratio: 744 / 1039;
+  margin-top: 18vh;
+  animation: ee-er-stage-shake 520ms cubic-bezier(0.36, 0.07, 0.19, 0.97) 1.5s both;
+}
+
+.ee-er-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+}
+
+.ee-er-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Rebecca : elle tire vers le haut (petit recul), puis se fait écraser. */
+.ee-er-rebecca {
+  transform: rotate(-3deg);
+  transform-origin: 50% 100%;
+  /* L'écrasement (rempli dès le départ) passe sous le recul, prioritaire tant qu'il joue. */
+  animation:
+    ee-er-crushed 900ms cubic-bezier(0.2, 0.9, 0.3, 1) 1.5s both,
+    ee-er-recoil 160ms steps(2, end) 0.3s 7;
+}
+
+.ee-er-rebecca img {
+  animation: ee-er-flatline 1.2s ease-out 1.6s both;
+}
+
+.ee-er-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 56% 70%, #fff, rgba(0, 240, 255, 0.5) 30%, transparent 65%);
+  opacity: 0;
+  animation: ee-er-flash 420ms ease-out 1.5s both;
+}
+
+.ee-er-cracks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ee-er-cracks path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9));
+  vector-effect: non-scaling-stroke;
+  animation: ee-er-crack 420ms ease-out 1.52s both;
+}
+
+/* Ombre d'Adam qui grossit sur Rebecca avant l'impact. */
+.ee-er-shadow {
+  position: absolute;
+  inset: 20% 4% 20%;
+  z-index: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.85), transparent);
+  opacity: 0;
+  transform: scale(0.2);
+  animation: ee-er-shadow 1.1s ease-in 0.4s both;
+}
+
+/* Adam : chute depuis le haut de l'écran, atterrit sur Rebecca. */
+.ee-er-adam {
+  z-index: 2;
+  transform: translate(12%, -32%) rotate(6deg);
+  animation: ee-er-drop 1.5s cubic-bezier(0.55, 0, 1, 0.45) both;
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(255, 0, 60, 0.35);
+}
+
+.ee-er-dust {
+  position: absolute;
+  bottom: 22%;
+  z-index: 3;
+  width: 70%;
+  height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(190, 180, 170, 0.55), transparent);
+  filter: blur(6px);
+  opacity: 0;
+}
+
+.ee-er-dust.left {
+  left: -45%;
+  animation: ee-er-dust-left 1.1s ease-out 1.5s both;
+}
+
+.ee-er-dust.right {
+  right: -45%;
+  animation: ee-er-dust-right 1.1s ease-out 1.5s both;
+}
+
+.ee-er-shockwave {
+  position: absolute;
+  top: 68%;
+  left: 50%;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 0, 60, 0.8);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.2);
+  animation: ee-er-shockwave 700ms ease-out 1.5s both;
+}
+
+.ee-er-impact {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  animation: ee-er-impact 300ms ease-out 1.5s both;
+}
+
+.ee-er-text {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  opacity: 0;
+  animation: ee-toast-in 420ms steps(5, end) 2.4s both;
+}
+
+.ee-er-text small {
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.ee-er-text strong {
+  position: relative;
+  color: var(--c-red);
+  font-family: var(--font-display);
+  font-size: clamp(44px, 13vw, 84px);
+  font-weight: 700;
+  line-height: 0.9;
+  text-shadow:
+    -3px 0 rgba(0, 240, 255, 0.55),
+    0 0 26px rgba(255, 0, 60, 0.6);
+}
+
+.ee-er-text strong::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: #fff;
+  clip-path: inset(40% 0 45% 0);
+  transform: translateX(5px);
+  animation: ee-glitch-slice 900ms steps(2, end) infinite;
+}
+
+.ee-er-text span {
+  color: var(--c-text-soft);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+@keyframes ee-er-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ee-er-warning {
+  0%,
+  40%,
+  80% {
+    opacity: 1;
+  }
+  20%,
+  60%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ee-er-recoil {
+  50% {
+    transform: rotate(-3deg) translateY(3px);
+  }
+}
+
+@keyframes ee-er-drop {
+  0% {
+    transform: translate(18%, -160vh) rotate(-14deg);
+  }
+  100% {
+    transform: translate(12%, -32%) rotate(6deg);
+  }
+}
+
+@keyframes ee-er-shadow {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes ee-er-crushed {
+  0% {
+    transform: rotate(-3deg);
+  }
+  18% {
+    transform: rotate(-4deg) translateY(10%) scale(1.06, 0.82);
+  }
+  45% {
+    transform: rotate(-3.5deg) translateY(6%) scale(1.02, 0.92);
+  }
+  100% {
+    transform: rotate(-3.5deg) translateY(6%) scale(1.02, 0.94);
+  }
+}
+
+@keyframes ee-er-flatline {
+  to {
+    filter: grayscale(1) brightness(0.55) contrast(1.1);
+  }
+}
+
+@keyframes ee-er-flash {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ee-er-crack {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ee-er-dust-left {
+  0% {
+    opacity: 0.9;
+    transform: translateX(40%) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-30%) scale(1.4);
+  }
+}
+
+@keyframes ee-er-dust-right {
+  0% {
+    opacity: 0.9;
+    transform: translateX(-40%) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(30%) scale(1.4);
+  }
+}
+
+@keyframes ee-er-shockwave {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(9);
+  }
+}
+
+@keyframes ee-er-impact {
+  0% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ee-er-stage-shake {
+  10%,
+  90% {
+    transform: translate(-3px, 2px);
+  }
+  20%,
+  80% {
+    transform: translate(6px, -3px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate(-10px, 5px);
+  }
+  40%,
+  60% {
+    transform: translate(10px, -4px);
+  }
+}
+
+.ee-er-replay {
+  margin-top: 12px;
+  color: var(--c-red);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---------- Secousse de la page (Blackwall) ---------- */
+
+.ee-shake {
+  animation: ee-shake 480ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes ee-shake {
+  10%,
+  90% {
+    transform: translate(-2px, 1px);
+  }
+  20%,
+  80% {
+    transform: translate(4px, -2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate(-7px, 3px);
+  }
+  40%,
+  60% {
+    transform: translate(7px, -3px);
+  }
+}

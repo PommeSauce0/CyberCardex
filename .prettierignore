@@ -1,0 +1,9 @@
+dist
+node_modules
+public
+backups
+tmp
+src/data/*.json
+data
+package-lock.json
+android

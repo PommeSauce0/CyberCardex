@@ -1,0 +1,129 @@
+/* Couleur de la courbe : cyan un cran plus profond que le néon de l'app, pour rester
+   dans la plage de luminosité lisible sur fond sombre (validé). */
+.history {
+  --series: #00a3b5;
+}
+
+.history-chart {
+  position: relative;
+  min-height: 60px;
+  padding: 12px 0 4px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  touch-action: pan-y;
+}
+
+.history-chart svg {
+  display: block;
+  overflow: visible;
+}
+
+.history-grid line {
+  stroke: var(--c-border-soft);
+  stroke-width: 1;
+}
+
+.history-grid text,
+.history-axis {
+  fill: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.history-area {
+  fill: var(--series);
+  opacity: 0.12;
+}
+
+.history-line {
+  fill: none;
+  stroke: var(--series);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* Point : entouré de la couleur du fond pour rester net sur la courbe. */
+.history-end,
+.history-hover circle {
+  fill: var(--series);
+  stroke: var(--c-surface);
+  stroke-width: 2;
+}
+
+.history-hover line {
+  stroke: var(--c-muted);
+  stroke-width: 1;
+}
+
+.history-tooltip {
+  position: absolute;
+  top: 6px;
+  display: grid;
+  gap: 1px;
+  min-width: 120px;
+  padding: 7px 10px;
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-bg);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.history-tooltip strong {
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: 16px;
+}
+
+.history-tooltip span,
+.history-tooltip small {
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.history-empty {
+  margin: 0;
+  padding: 10px 16px 14px;
+  color: var(--c-muted);
+  font-size: 14px;
+}
+
+.history-label {
+  display: block;
+  margin: 18px 0 8px;
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Derniers ajouts : bande qui défile horizontalement. */
+.history-recent {
+  display: grid;
+  grid-auto-columns: 78px;
+  grid-auto-flow: column;
+  gap: 10px;
+  padding-bottom: 6px;
+  overflow-x: auto;
+}
+
+.history-recent a {
+  display: grid;
+  gap: 4px;
+  color: var(--c-muted-2);
+  text-decoration: none;
+}
+
+.history-recent img {
+  width: 100%;
+  aspect-ratio: 733 / 1024;
+  object-fit: contain;
+}
+
+.history-recent small {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-align: center;
+}

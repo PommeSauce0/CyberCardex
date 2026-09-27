@@ -1,0 +1,221 @@
+.app-shell {
+  min-height: 100vh;
+  /* Application Android (bord à bord) : rien sous la barre d'état. 0 dans un navigateur. */
+  padding-top: env(safe-area-inset-top);
+}
+
+.app-shell::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 950;
+  height: env(safe-area-inset-top);
+  background: var(--c-bg);
+  pointer-events: none;
+}
+
+/* ---------- Desktop : barre en haut ---------- */
+
+.app-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 62px;
+  padding: 0 max(28px, calc((100% - 1180px) / 2 + 28px));
+  border-bottom: 1px solid var(--c-border);
+  background: rgba(6, 7, 10, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Liseré néon sous la barre */
+.app-nav::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(252, 238, 10, 0.6) 20%,
+    rgba(0, 240, 255, 0.5) 80%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.app-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--c-text);
+  text-decoration: none;
+}
+
+.brand-mark {
+  --cut: 7px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut))
+  );
+}
+
+.brand-text {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.brand-text span {
+  color: var(--c-yellow);
+}
+
+.app-nav-links {
+  display: flex;
+  gap: 2px;
+}
+
+.app-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 62px;
+  padding: 0 14px;
+  color: var(--c-muted);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 120ms ease;
+}
+
+.app-nav-link svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-nav-link:hover {
+  color: var(--c-text);
+}
+
+.app-nav-link.active {
+  color: var(--c-yellow);
+}
+
+/* Indicateur actif : trait lumineux */
+.app-nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 2px;
+  background: var(--c-yellow);
+  box-shadow: 0 0 12px var(--c-yellow);
+}
+
+.app-nav-count {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: var(--c-red);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ---------- Mobile : barre en bas (safe areas pour Capacitor) ---------- */
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding-bottom: var(--nav-height);
+  }
+
+  .app-nav {
+    position: fixed;
+    inset: auto 0 0;
+    height: var(--nav-height);
+    padding: 0 max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
+      max(4px, env(safe-area-inset-left));
+    border-top: 1px solid var(--c-border);
+    border-bottom: 0;
+    /* Totalement opaque : sur Android, le contenu se devinait à travers la barre. */
+    background: var(--c-bg);
+  }
+
+  .app-nav::after {
+    top: -1px;
+    bottom: auto;
+  }
+
+  .app-nav-brand {
+    display: none;
+  }
+
+  .app-nav-links {
+    flex: 1;
+    justify-content: space-around;
+  }
+
+  .app-nav-link {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    height: 64px;
+    padding: 0 2px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .app-nav-link svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .app-nav-link.active::after {
+    top: 0;
+    bottom: auto;
+    left: 22%;
+    right: 22%;
+  }
+
+  .app-nav-count {
+    position: absolute;
+    top: 7px;
+    left: calc(50% + 6px);
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+}

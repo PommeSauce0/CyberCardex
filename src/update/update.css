@@ -1,0 +1,117 @@
+/* Bandeau « nouvelle version » en haut de l'app (fond opaque : WebView Samsung) */
+.update-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin: 12px auto 0;
+  width: min(calc(100% - 24px), 1000px);
+  padding: 14px 16px;
+  border: 1px solid var(--c-cyan);
+  border-left-width: 4px;
+  background: var(--c-surface-2);
+}
+
+.update-banner-text {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.update-banner-text strong {
+  display: block;
+  color: var(--c-cyan);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.update-banner-text p {
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: var(--c-muted-2);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.update-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.update-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+  color: var(--c-text-soft);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.update-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.update-note {
+  flex: 1 1 220px;
+  margin: 0;
+  color: var(--c-muted-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.update-note.error {
+  color: var(--c-danger);
+}
+
+/* Réglages */
+.update-found {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.update-found strong {
+  color: var(--c-cyan);
+  font-family: var(--font-display);
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.update-notes-label {
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.update-notes {
+  margin: 0;
+  color: var(--c-text-soft);
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.settings-section .update-note {
+  margin-top: 14px;
+}
+
+@media (max-width: 760px) {
+  .update-banner-actions,
+  .update-banner-actions .btn,
+  .update-progress {
+    width: 100%;
+  }
+}

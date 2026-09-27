@@ -1,0 +1,150 @@
+.set-header {
+  position: relative;
+  margin-bottom: 30px;
+  overflow: hidden;
+  padding: 26px 26px 24px;
+  border: 1px solid var(--c-border);
+  border-left: 4px solid var(--c-yellow);
+  background: linear-gradient(90deg, rgba(252, 238, 10, 0.07), transparent 45%), var(--c-surface);
+}
+
+/* Filigrane : code de la série en très grand */
+.set-header::after {
+  content: attr(data-code);
+  position: absolute;
+  right: 18px;
+  bottom: -18px;
+  color: transparent;
+  font-family: var(--font-display);
+  font-size: 150px;
+  font-weight: 700;
+  line-height: 1;
+  -webkit-text-stroke: 1px rgba(252, 238, 10, 0.12);
+  pointer-events: none;
+  user-select: none;
+}
+
+.set-header-topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.set-code {
+  padding: 3px 8px;
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.set-edition-badge,
+.set-year-badge {
+  padding: 3px 8px;
+  border: 1px solid var(--c-border-strong);
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.set-header h1 {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 14px;
+  font-size: clamp(34px, 6.5vw, 64px);
+}
+
+.set-progress-label {
+  position: relative;
+  z-index: 1;
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.main-progress {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+  .set-header {
+    padding: 20px 16px 18px;
+  }
+
+  .set-header::after {
+    font-size: 96px;
+    bottom: -10px;
+  }
+}
+
+.set-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.set-toolbar .view-switch:first-child {
+  margin-right: auto;
+}
+
+/* Taille des cartes : petits boutons-icônes. */
+.size-switch button {
+  display: grid;
+  place-items: center;
+  padding: 0 12px;
+}
+
+.view-switch {
+  display: flex;
+  border: 1px solid var(--c-border-strong);
+}
+
+.view-switch button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 0;
+  background: var(--c-surface);
+  color: var(--c-muted-2);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.view-switch button + button {
+  border-left: 1px solid var(--c-border-strong);
+}
+
+.view-switch button.active {
+  background: var(--c-cyan);
+  color: var(--c-ink);
+}
+
+@media (max-width: 600px) {
+  .set-toolbar {
+    flex-wrap: nowrap;
+  }
+
+  .set-toolbar .view-switch:first-child {
+    flex: 1;
+    margin-right: 0;
+  }
+
+  .view-switch button {
+    flex: 1;
+    padding: 0 10px;
+  }
+}

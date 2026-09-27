@@ -1,0 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# CyberCardex : fichiers lourds ou générés
+public/cards/
+public/thumbs/
+backups/
+tmp/
+
+# Clé de signature de l'app et variables secrètes
+keys/
+*.jks
+*.keystore
+keystore.properties
+.env
+.env.*
+!.env.example
+
+# Notes et outils locaux
+README_DEV.md

@@ -1,0 +1,208 @@
+.quick-add-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(calc(100% - 24px), 1000px);
+  padding: 12px 14px 12px 18px;
+  border: 1px solid var(--c-yellow);
+  background: #06070a;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(252, 238, 10, 0.15);
+  transform: translateX(-50%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: page-in 200ms ease-out;
+}
+
+.quick-add-status {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quick-add-status strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.quick-add-count {
+  padding: 0 7px;
+  background: var(--c-cyan);
+  color: var(--c-ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.quick-add-status small {
+  overflow: hidden;
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-add-settings {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-add-settings .btn {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.quick-add-lang {
+  display: flex;
+  border: 1px solid var(--c-border-strong);
+}
+
+.quick-add-lang button {
+  min-width: 42px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.quick-add-lang button.active {
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  font-weight: 600;
+}
+
+.quick-add-bar.inline {
+  position: static;
+  width: 100%;
+  margin-bottom: 22px;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Laisse la place à la barre en bas de page */
+.has-quick-add {
+  padding-bottom: 130px;
+}
+
+@media (max-width: 760px) {
+  .quick-add-bar.inline {
+    bottom: auto;
+  }
+
+  .quick-add-bar {
+    bottom: calc(var(--nav-height) + 8px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .quick-add-settings {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+  }
+
+  .quick-add-settings .select {
+    min-width: 0;
+  }
+
+  .quick-add-settings .btn {
+    width: 100%;
+  }
+
+  /* Un seul bouton (pas de « Terminer ») : il prend toute la ligne */
+  .quick-add-settings .btn:last-child:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+
+  .quick-add-status small {
+    display: none;
+  }
+
+  .has-quick-add {
+    padding-bottom: 170px;
+  }
+}
+
+/* Bouton flottant : ouvre l'ajout rapide où que l'on soit dans la liste */
+.quick-add-fab {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: 24px;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 20px 0 16px;
+  border: 1px solid var(--c-yellow);
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  animation: page-in 200ms ease-out;
+}
+
+.quick-add-fab svg {
+  width: 20px;
+  height: 20px;
+}
+
+.quick-add-fab:active {
+  transform: translateY(1px);
+  filter: brightness(0.92);
+}
+
+@media (max-width: 760px) {
+  .quick-add-fab {
+    right: max(14px, env(safe-area-inset-right));
+    bottom: calc(var(--nav-height) + 14px);
+    width: 56px;
+    height: 56px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .quick-add-fab span {
+    display: none;
+  }
+
+  .quick-add-fab svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Le bouton flottant ne recouvre jamais la dernière rangée de cartes */
+.has-quick-fab {
+  padding-bottom: 96px;
+}

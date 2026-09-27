@@ -1,0 +1,477 @@
+import type { Messages } from './index';
+
+/** English plural: anything but 1 (« 0 cards », « 1 card », « 2 cards »). */
+const s = (count: number, singular: string, plural = `${singular}s`) =>
+  `${count} ${count === 1 ? singular : plural}`;
+
+/** Interface texts in English (same keys as fr.ts, checked by TypeScript). */
+export const en: Messages = {
+  locale: 'en-GB',
+  cardmarketPath: 'en',
+  isPlural: (count: number) => count !== 1,
+
+  common: {
+    loading: 'Loading…',
+    card: 'card',
+    cards: 'cards',
+    copy: 'copy',
+    copies: 'copies',
+    add: '+ Add',
+    added: '✓ Added',
+    cancel: 'Cancel',
+    close: 'Close',
+    inWishlist: 'In your wishlist',
+    setComplete: '✓ Set complete',
+    finishUnknown: 'To be confirmed',
+  },
+
+  nav: {
+    main: 'Main navigation',
+    brand: 'CyberCardex — home',
+    home: 'Catalogue',
+    search: 'Search',
+    scan: 'Scanner',
+    collection: 'Collection',
+    wishlist: 'Wishlist',
+    settings: 'Settings',
+  },
+
+  colors: { Red: 'Red', Blue: 'Blue', Green: 'Green', Yellow: 'Yellow' },
+  cardTypes: { Legend: 'Legend', Unit: 'Unit', Gear: 'Gear', Program: 'Program' },
+
+  filters: { all: 'All', owned: 'Owned', missing: 'Missing', wished: 'Wishlist' },
+
+  home: {
+    subtitle: 'Manage your collection, find your cards and complete every set.',
+    myCollection: 'My collection',
+    progress: 'Progress',
+    categories: 'Categories',
+    tabs: { core: 'Beta / Retail', promo: 'Promo', decks: 'Decks' },
+    tabTitles: { core: 'Beta / Retail', promo: 'Promos & events', decks: 'Decks' },
+    emptyTab: 'Nothing in this category.',
+    cardsCount: (owned: number, total: number) => `${owned} / ${total} cards`,
+    percentComplete: (percent: number) => `${percent}% complete`,
+  },
+
+  dates: {
+    cyberpunkDate: '10 December 2020',
+    cyberpunkText: (age: number) => `Cyberpunk 2077 turns ${age} today.`,
+    kickstarterDate: '17 March 2026',
+    kickstarterTitle: 'Funded in 7 minutes',
+    kickstarterText: (age: number) =>
+      age > 0
+        ? `${s(age, 'year')} ago, the Cyberpunk TCG Kickstarter hit its goal in 7 minutes. Thanks, chooms.`
+        : 'The Cyberpunk TCG Kickstarter hit its goal in 7 minutes. Thanks, chooms.',
+  },
+
+  set: {
+    cardSize: 'Card size',
+    cardSizes: { small: 'Small cards', medium: 'Medium cards', large: 'Large cards' },
+    notFoundTitle: 'Set not found',
+    notFoundText: 'This link does not match any set in the catalogue.',
+    replayBraindance: 'Replay the braindance',
+    display: 'Display',
+    grid: 'Grid',
+    binder: 'Binder',
+    searchPlaceholder: 'Search a card or a number…',
+    emptyTitle: 'No cards',
+    emptyText: 'No card matches these filters.',
+  },
+
+  binder: {
+    format: 'Pockets per page',
+    missing: (label: string) => `${label} (missing)`,
+    tabs: 'Binder dividers',
+    tabLabel: (
+      from: string,
+      to: string,
+      start: number,
+      end: number,
+      owned: number,
+      total: number,
+    ) => `Cards ${from} to ${to} (pages ${start} to ${end}): ${owned} / ${total}`,
+    pages: 'Binder pages',
+    previous: 'Previous page',
+    next: 'Next page',
+    page: (page: number) => `Page ${page}`,
+    pagesRange: (first: number, second: number) => `Pages ${first}–${second}`,
+  },
+
+  quickAdd: {
+    title: 'Quick add',
+    hint: 'Tap a card to add 1 copy.',
+    last: (label: string) => `Last: ${label}`,
+    condition: 'Condition of added copies',
+    language: 'Language of added copies',
+    undo: 'Undo',
+    done: 'Done',
+    addOne: (label: string) => `Add 1 copy of ${label}`,
+    removeOne: (label: string) => `Remove 1 copy of ${label}`,
+  },
+
+  card: {
+    notFoundTitle: 'Card not found',
+    notFoundText: 'This printing is not (or no longer) in the catalogue.',
+    previous: 'Previous card',
+    next: 'Next card',
+    imageUnavailable: 'Image unavailable',
+    viewCloser: (name: string) => `View ${name} up close`,
+    closeUp: 'Close-up',
+    versions: 'Versions',
+    effect: 'Effect',
+    cost: 'Cost',
+    power: 'Power',
+    inWishlist: '★ In my wishlist',
+    addWishlist: '☆ Wishlist',
+    printing: 'Printing',
+    set: 'Set',
+    number: 'Number',
+    rarity: 'Rarity',
+    language: 'Language',
+    finish: 'Finish',
+    treatments: 'Treatments',
+    artist: 'Artist',
+    unknown: 'Unknown',
+    cardmarketView: 'View on Cardmarket',
+    cardmarketSearch: 'Search on Cardmarket',
+    cardmarketPrice: (price: string, date: string) => `Cardmarket: ${price} · trend on ${date}`,
+    officialSite: 'View on cyberpunktcg.com',
+  },
+
+  addCopy: {
+    condition: 'Condition',
+    more: 'Graded, purchase price, notes',
+    noteShort: 'note',
+    graded: 'Graded card',
+    company: 'Company',
+    grade: 'Grade',
+    purchasePrice: 'Purchase price',
+    notes: 'Notes',
+    notesPlaceholder: 'Optional notes…',
+    errorGradeMissing: 'Enter a grade.',
+    errorGradeRange: 'The grade must be between 1 and 10.',
+    errorPrice: 'The purchase price is not valid.',
+  },
+
+  owned: {
+    graded: 'Graded',
+    notGraded: 'Not graded',
+    addSame: 'Add an identical copy',
+    removeOne: 'Remove 1',
+    delete: 'Delete',
+  },
+
+  viewer: {
+    label: (name: string) => `${name} viewer`,
+    close: 'Close the viewer',
+    helpDesktop: 'Hover to tilt • Scroll to zoom • Double-click to toggle zoom',
+    helpTouch: 'Pinch to zoom • Drag to move • Double-tap to zoom • Swipe down to close',
+    zoomControls: 'Zoom controls',
+    zoomOut: 'Zoom out',
+    reset: 'Reset view',
+    zoomIn: 'Zoom in',
+  },
+
+  search: {
+    eyebrow: 'All sets',
+    placeholder: 'Name, number, artist, affiliation, rules text…',
+    filters: 'Filters',
+    hideFilters: 'Hide filters',
+    color: 'Colour',
+    type: 'Type',
+    foilOnly: 'Foil only',
+    sort: 'Sort',
+    sorts: {
+      set: 'By set',
+      name: 'Name (A → Z)',
+      cost: 'Cost',
+      rarity: 'Rarity (rarest first)',
+    },
+    reset: 'Reset',
+    result: 'result',
+    results: 'results',
+    showMore: (left: number) => `Show more (${left} left)`,
+    emptyTitle: 'No results',
+    emptyText: 'Try another keyword or remove some filters.',
+    blackwallTitle: 'What you are looking for is not on this side of the wall.',
+    blackwallText: 'Get back to safety, netrunner.',
+  },
+
+  collection: {
+    emptyTitle: 'Your collection is empty',
+    emptyText: 'Open a card from the catalogue and add your copies.',
+    emptyBackup: 'Got a backup? Import it from the settings.',
+    browse: 'Browse the catalogue',
+    printingsCount: (owned: number, total: number) => `${owned} / ${total} printings`,
+    copies: 'Copies',
+    distinctPrinting: 'distinct printing',
+    distinctPrintings: 'distinct printings',
+    uniqueCards: 'Unique cards',
+    outOf: (total: number) => `out of ${total}`,
+    foilGraded: 'Foil / graded',
+    spent: 'Spent',
+    spentHint: 'recorded purchase prices',
+    bySet: 'By set',
+    byRarity: 'By rarity',
+    rarityMissing: 'See the missing cards of this rarity',
+    myCards: 'My cards',
+    filterPlaceholder: 'Filter my collection…',
+    sorts: {
+      recent: 'Recently added',
+      set: 'Set',
+      name: 'Name',
+      rarity: 'Rarity',
+      quantity: 'Quantity',
+    },
+    noMatch: 'No card in your collection matches this search.',
+  },
+
+  wishlist: {
+    eyebrow: 'Wanted cards',
+    subtitle:
+      'Add a card with the ☆ button on its page. It leaves the list as soon as you record a copy.',
+    emptyTitle: 'Your wishlist is empty',
+    emptyText: 'Spot the cards you are missing in the catalogue or the search.',
+    seeMissing: 'See missing cards',
+    ownedElsewhere: (count: number) => `You already own ×${count} in another version`,
+    toFind: 'To find',
+    price: 'Price',
+    remove: 'Remove',
+  },
+
+  settings: {
+    interfaceTitle: 'Interface language',
+    interfaceText: 'The app texts. Card texts follow the setting below.',
+    cardLanguageTitle: 'Card language',
+    cardLanguageText: 'CyberCardex shows this language whenever a matching printing exists.',
+    cardLanguageOption: {
+      FR: 'Use French printings when they exist.',
+      EN: 'Use English printings when they exist.',
+    },
+    fallbackTitle: 'Automatic fallback',
+    fallbackText:
+      'If a printing does not exist in your language, the available version is shown (e.g. BETA stays in EN). Your copies always keep their real language, and a FR copy counts towards progress even when English is shown.',
+    backupTitle: 'Backup',
+    backupText:
+      'Your collection is stored on this device only. Export it regularly so you never lose it and can move it to another device.',
+    exportJson: 'Export backup (.json)',
+    exportCsv: 'Export for Excel (.csv)',
+    import: 'Import a backup…',
+    confirmImport: 'Confirm import',
+    importReady: 'Backup ready to import',
+    importSummary: (copies: number, wishes: number, rejected: number, unknown: number) =>
+      [
+        s(copies, 'copy', 'copies'),
+        `${s(wishes, 'card')} in wishlist`,
+        rejected > 0 && `${s(rejected, 'invalid entry', 'invalid entries')} ignored`,
+        unknown > 0 && `${s(unknown, 'printing')} unknown to the catalogue`,
+      ]
+        .filter(Boolean)
+        .join(' • '),
+    merge: 'Merge with my collection',
+    replace: 'Replace my collection',
+    confirmReplace: (count: number) =>
+      `Replace your current collection (${s(count, 'copy', 'copies')}) with the backup?`,
+    imported: (added: number, duplicates: number, unknown: number) =>
+      `${s(added, 'copy', 'copies')} imported` +
+      (duplicates > 0 ? ` (${duplicates} already there)` : '') +
+      (unknown > 0 ? ` • ${unknown} linked to printings missing from the catalogue` : '') +
+      '.',
+    confirmReset: (count: number) =>
+      `Permanently delete your collection (${s(count, 'copy', 'copies')}) and your wishlist?\n\nRemember to export a backup first.`,
+    resetDone: 'Collection and wishlist cleared.',
+    dataTitle: 'Data',
+    catalog: 'Catalogue',
+    catalogCounts: (cards: number, printings: number, sets: number) =>
+      `${s(cards, 'card')} • ${s(printings, 'printing')} • ${s(sets, 'set')}`,
+    collectionCounts: (copies: number, wishes: number) =>
+      `${s(copies, 'copy', 'copies')} • ${wishes} in wishlist`,
+    reset: 'Clear my collection…',
+  },
+
+  about: {
+    title: 'About',
+    version: 'Version',
+    unofficial:
+      'CyberCardex is a free, unofficial fan project, not affiliated with WeirdCo or CD PROJEKT.',
+    credits:
+      'Cyberpunk TCG is developed by WeirdCo in collaboration with CD PROJEKT RED. Cyberpunk, Cyberpunk 2077 and the card artwork belong to CD PROJEKT S.A. and their rights holders.',
+    sources: 'Sources',
+    cardData: 'Cards: official data and images from',
+    prices: 'Prices: Cardmarket, for reference only.',
+    privacyTitle: 'Privacy',
+    privacy:
+      'No data is collected: no account, no ads, no analytics. Your collection stays on this device, unless you export it yourself.',
+    privacyUpdates:
+      'In the Android app, checking for updates contacts GitHub: GitHub then sees your IP address, like any website.',
+    licenseTitle: 'Licence',
+    license: 'Open-source code under the MIT licence, provided as is, without warranty.',
+    sourceCode: 'Source code on GitHub',
+  },
+
+  update: {
+    title: 'App',
+    text: 'New versions are published on GitHub and install over the app: your collection is kept.',
+    check: 'Check for updates',
+    checking: 'Checking…',
+    upToDate: 'You have the latest version.',
+    available: (version: string) => `New version ${version} available`,
+    size: (mb: number) => `${mb} MB`,
+    notes: "What's new",
+    install: 'Install',
+    later: 'Later',
+    downloading: (percent: number) => (percent >= 0 ? `Downloading… ${percent}%` : 'Downloading…'),
+    needsPermission:
+      'Allow CyberCardex to install apps in the screen that opens, then come back: the install will resume by itself.',
+    openPermission: 'Open the setting',
+    installing: 'The Android installer is open. Your cards are kept.',
+    retry: 'Try again',
+    checkFailed: "Can't reach GitHub. Check your connection.",
+    failed: (message: string) => `Failed: ${message}`,
+  },
+
+  scan: {
+    eyebrow: 'Visual recognition',
+    subtitle: 'Take a photo of a card: it is recognised on your phone, offline.',
+    quickAddHint: 'Condition and language applied to cards added from the scanner.',
+    loading: 'Loading fingerprints…',
+    recognised: 'Card recognised',
+    aim: 'Frame the card, then press the shutter',
+    notRecognised:
+      'No card recognised. Fill the frame with the card, hold the phone still and avoid glare.',
+    imageError: 'Could not read this image.',
+    cameraDenied: 'Camera access denied. Allow it in the settings, or import a photo.',
+    cameraError: 'Could not open the camera. You can import a photo instead.',
+    indexError: (status: number) => `Scanner index not found (HTTP ${status})`,
+    streak: 'Your Kiroshi optics are heating up, choom.',
+    preview: 'Camera preview',
+    stop: 'Stop',
+    gallery: 'Gallery',
+    resume: 'Aim again',
+    shoot: 'Take the photo',
+    ready: 'Ready to scan',
+    readyText: 'Lay the card flat, well lit and without glare.',
+    noCamera:
+      'The live camera needs a secure connection (HTTPS or localhost). You can import a photo of the card instead.',
+    start: 'Turn on the camera',
+    importPhoto: 'Import a photo',
+    alreadyOwned: (count: number) => `Already in your collection: ×${count}`,
+    chooseVersion: 'Pick the exact version',
+    openCard: 'Open card',
+    rescan: 'Scan again',
+    session: 'Added during this scan',
+  },
+
+  decks: {
+    eyebrow: 'Deckbuilding',
+    title: 'Decks',
+    subtitle:
+      'Add cards by name (or paste a list): the app tells you what you already own and what you are missing.',
+    searchPlaceholder: 'Add a card: type its name…',
+    noMatch: 'No matching card.',
+    ownedCount: (count: number) => `owned ×${count}`,
+    notOwned: 'not owned',
+    inDeck: (count: number) => `×${count} in deck`,
+    importToggle: 'Import a list',
+    importButton: 'Add these cards to the deck',
+    copy: 'Copy list',
+    copied: 'List copied ✓',
+    copyFailed: 'Copy is not available here: use “Export (.txt)”.',
+    exportFile: 'Export (.txt)',
+    otherType: 'Other',
+    less: (name: string) => `Remove 1 ${name}`,
+    more: (name: string) => `Add 1 ${name}`,
+    emptyTitle: 'Empty deck',
+    emptyText: 'Search a card by name above, or import a list.',
+    saved: 'My decks',
+    new: 'New',
+    untitled: 'Untitled deck',
+    namePlaceholder: 'Deck name',
+    textPlaceholder: [
+      '3x Adam Smasher - Ender of Legends',
+      '2 Corpo Security',
+      '3x MS01-131A',
+      '…',
+    ].join('\n'),
+    delete: 'Delete',
+    confirmDelete: (name: string) => `Delete the deck “${name}”?`,
+    unknown: (count: number) => `${s(count, 'unrecognised line')}:`,
+    owned: 'Cards owned',
+    missing: 'To find',
+    missingCards: (count: number) => s(count, 'different card'),
+    addMissing: 'Add missing cards to the wishlist',
+    wishAdded: (count: number) => `${s(count, 'card')} added to the wishlist.`,
+    wishAlready: 'All already in your wishlist.',
+    complete: '✓ You own the whole deck!',
+    rowMissing: (owned: number, missing: number) => `owned ×${owned} • ${missing} missing`,
+    rowNone: (missing: number) => `${missing} missing`,
+    rowOk: (owned: number) => `owned ×${owned} • ✓`,
+  },
+
+  history: {
+    title: 'History',
+    chartLabel: (total: number, since: string) =>
+      `Collection growth since ${since}: ${s(total, 'copy', 'copies')} today.`,
+    total: (total: number) => s(total, 'copy', 'copies'),
+    added: (count: number) => `+${count} that day`,
+    notEnough: 'Your collection curve will appear once you have added cards on at least two days.',
+    recent: 'Recently added',
+  },
+
+  notFound: {
+    eyebrow: 'Error 404',
+    title: 'Page not found',
+    text: 'This link leads nowhere in Night City.',
+    back: 'Back to the catalogue',
+  },
+
+  crash: {
+    eyebrow: 'Error',
+    title: 'Something crashed',
+    text: 'This page could not be displayed. Your collection is safe.',
+    reload: 'Reload',
+  },
+
+  importErrors: {
+    notJson: 'This file is not valid JSON.',
+    otherApp: 'This file does not come from CyberCardex.',
+    unknownFormat: 'Unrecognised backup format.',
+    noCollection: 'The backup contains no collection.',
+  },
+
+  /** Excel export: English format (comma separator, decimal point). */
+  csv: {
+    header: [
+      'Card',
+      'Subtitle',
+      'Set',
+      'Edition',
+      'Number',
+      'Language',
+      'Rarity',
+      'Finish',
+      'Treatments',
+      'Condition',
+      'Graded',
+      'Company',
+      'Grade',
+      'Purchase price (€)',
+      'Notes',
+      'Added on',
+      'Printing id',
+    ],
+    unknownCard: '(unknown card)',
+    yes: 'Yes',
+    no: 'No',
+    separator: ',',
+    decimal: '.',
+  },
+
+  easter: {
+    braindanceTitle: 'Recording started',
+    braindanceText: 'Night City on replay.',
+    time2017: 'Only 60 years to go until 2077.',
+    incoming: 'Contact above',
+    flatlined: 'Night City forgives nothing.',
+  },
+};

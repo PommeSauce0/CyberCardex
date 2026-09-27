@@ -1,0 +1,544 @@
+.binder {
+  margin-top: 6px;
+}
+
+.binder-spread {
+  position: relative;
+  scroll-margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1fr;
+  perspective: 2400px;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.binder-spread.wide {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Sur mobile, la feuille part hors de l'écran à gauche : on coupe sans créer de défilement. */
+.binder-spread:not(.wide) {
+  overflow-x: clip;
+}
+
+/* ---------- Pages ---------- */
+
+.binder-page {
+  position: relative;
+  height: 100%;
+  padding: 18px 18px 30px;
+  border: 1px solid var(--c-border-strong);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.03), transparent 40%),
+    linear-gradient(180deg, #0f1218, #0a0c11);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Double page : ombre de la reliure au centre. */
+.binder-page.left {
+  border-right: 0;
+  box-shadow:
+    inset -22px 0 26px -14px rgba(0, 0, 0, 0.9),
+    inset 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+.binder-page.right {
+  box-shadow:
+    inset 22px 0 26px -14px rgba(0, 0, 0, 0.9),
+    inset 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Anneaux de la reliure */
+.binder-spread.wide::after {
+  content: '';
+  position: absolute;
+  top: 8%;
+  bottom: 8%;
+  left: calc(50% - 5px);
+  z-index: 3;
+  width: 10px;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 28px,
+    var(--c-border-strong) 28px 34px,
+    #5a6372 34px 36px,
+    transparent 36px 64px
+  );
+  pointer-events: none;
+}
+
+/* Feuille vide (après la dernière page) */
+.binder-page.blank .binder-slot.filler {
+  visibility: hidden;
+}
+
+.binder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Pages de 12 pochettes : 4 colonnes × 3 rangées. */
+.binder-page.slots-12 .binder-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.binder-page-number {
+  position: absolute;
+  right: 18px;
+  bottom: 8px;
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.binder-page.left .binder-page-number {
+  right: auto;
+  left: 18px;
+}
+
+/* ---------- Pochettes ---------- */
+
+.binder-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 744 / 1039;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+
+/* Reflet de la pochette plastique */
+.binder-slot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.07) 45%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.binder-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: filter 160ms ease;
+}
+
+.binder-slot.owned {
+  border-color: rgba(0, 240, 255, 0.35);
+}
+
+/* Carte manquante : visuel éteint, comme une pochette vide avec l'aperçu derrière. */
+.binder-slot.missing img {
+  filter: grayscale(0.9) brightness(0.28) contrast(0.95);
+}
+
+.binder-missing-number {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  z-index: 1;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+@media (hover: hover) {
+  .binder-slot:hover:not(.filler) {
+    border-color: var(--c-yellow);
+    transform: translateY(-2px);
+  }
+
+  .binder-slot.missing:hover img {
+    filter: grayscale(0.4) brightness(0.6);
+  }
+}
+
+.binder-slot.filler {
+  border-style: dashed;
+  background: transparent;
+  cursor: default;
+  opacity: 0.3;
+}
+
+.binder-slot.quick {
+  cursor: copy;
+}
+
+.binder-qty {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
+  padding: 1px 6px;
+  background: var(--c-cyan);
+  color: var(--c-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---------- Page qui tourne ---------- */
+
+/* La feuille pivote sur la reliure : recto = page quittée, verso = page découverte. */
+.binder-sheet {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  animation: 640ms cubic-bezier(0.45, 0.05, 0.3, 1) both;
+  pointer-events: none;
+}
+
+.binder-spread.wide .binder-sheet {
+  width: 50%;
+}
+
+.binder-spread.wide .binder-sheet.next {
+  left: 50%;
+}
+
+.binder-spread.wide .binder-sheet.prev {
+  transform-origin: right center;
+}
+
+.binder-sheet.next {
+  animation-name: binder-sheet-next;
+}
+
+.binder-sheet.prev {
+  animation-name: binder-sheet-prev;
+}
+
+.binder-spread.wide .binder-sheet.prev {
+  animation-name: binder-sheet-prev-wide;
+}
+
+@keyframes binder-sheet-next {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-180deg);
+  }
+}
+
+/* Mobile : la page précédente revient depuis la gauche. */
+@keyframes binder-sheet-prev {
+  from {
+    transform: rotateY(-180deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes binder-sheet-prev-wide {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(180deg);
+  }
+}
+
+.binder-sheet-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.binder-sheet-face.back {
+  transform: rotateY(180deg);
+}
+
+.binder-sheet-face > .binder-page {
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.12),
+    0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Ombre qui glisse sur chaque face selon l'angle, + liseré néon sur la tranche. */
+.binder-sheet-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  animation: 640ms cubic-bezier(0.45, 0.05, 0.3, 1) both;
+  pointer-events: none;
+}
+
+.binder-sheet.next .front::after,
+.binder-sheet.prev .back::after {
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.35), rgba(0, 0, 0, 0.75) 12%, #000);
+  animation-name: binder-shade-out;
+}
+
+.binder-sheet.next .back::after,
+.binder-sheet.prev .front::after {
+  background: linear-gradient(270deg, rgba(0, 240, 255, 0.35), rgba(0, 0, 0, 0.75) 12%, #000);
+  animation-name: binder-shade-in;
+}
+
+/* Sur la double page, en arrière, la feuille pivote dans l'autre sens : on inverse. */
+.binder-spread.wide .binder-sheet.prev .front::after {
+  background: linear-gradient(270deg, rgba(0, 240, 255, 0.35), rgba(0, 0, 0, 0.75) 12%, #000);
+  animation-name: binder-shade-out;
+}
+
+.binder-spread.wide .binder-sheet.prev .back::after {
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.35), rgba(0, 0, 0, 0.75) 12%, #000);
+  animation-name: binder-shade-in;
+}
+
+@keyframes binder-shade-out {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+@keyframes binder-shade-in {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---------- Intercalaires ---------- */
+
+/* Onglets qui dépassent en haut du classeur, comme des intercalaires en plastique. */
+.binder-tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 4px;
+  margin-bottom: -1px;
+  padding: 0 14px;
+}
+
+.binder-tab {
+  --tab-color: var(--c-border-strong);
+  --tab-cut: 10px;
+  flex: 1;
+  max-width: 190px;
+  min-width: 0;
+  padding: 1px 1px 0;
+  border: 0;
+  background: var(--tab-color);
+  color: var(--c-muted-2);
+  font: inherit;
+  cursor: pointer;
+  clip-path: polygon(var(--tab-cut) 0, calc(100% - var(--tab-cut)) 0, 100% 100%, 0 100%);
+  transform: translateY(4px);
+  transition:
+    transform 160ms ease,
+    color 160ms ease;
+}
+
+/* Le fond intérieur, découpé pareil 1 px plus petit : la couleur de l'onglet fait la bordure. */
+.binder-tab-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px 8px;
+  background: linear-gradient(180deg, #141820, #0d1016);
+  clip-path: polygon(var(--tab-cut) 0, calc(100% - var(--tab-cut)) 0, 100% 100%, 0 100%);
+}
+
+.binder-tab:hover {
+  color: var(--c-text);
+  transform: translateY(1px);
+}
+
+.binder-tab.active {
+  --tab-color: var(--c-yellow);
+  z-index: 2;
+  color: var(--c-yellow);
+  transform: none;
+}
+
+.binder-tab.active .binder-tab-inner {
+  background: linear-gradient(180deg, #2a2708, #0f1218);
+}
+
+.binder-tab-range {
+  overflow: hidden;
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.binder-tab-range i {
+  margin: 0 3px;
+  color: var(--c-muted);
+  font-style: normal;
+}
+
+.binder-tab-fill {
+  position: relative;
+  width: 70%;
+  height: 3px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.binder-tab-fill i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--c-cyan);
+}
+
+.binder-tab.complete .binder-tab-fill i {
+  background: var(--c-yellow);
+}
+
+/* ---------- Navigation page par page ---------- */
+
+.binder-nav {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.binder-nav-arrow {
+  width: 52px;
+  min-height: 48px;
+  padding: 0;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.binder-nav-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.binder-nav-label strong {
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.binder-nav-label strong span {
+  color: var(--c-muted);
+}
+
+.binder-nav-label small {
+  overflow: hidden;
+  max-width: 100%;
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .binder-page {
+    padding: 10px 10px 24px;
+  }
+
+  .binder-grid {
+    gap: 7px;
+  }
+
+  /* Sur téléphone, les flèches et le glissé suffisent : pas d'intercalaires. */
+  .binder-tabs {
+    display: none;
+  }
+
+  .binder-nav {
+    gap: 10px;
+  }
+
+  .binder-nav-arrow {
+    width: 44px;
+    min-height: 44px;
+  }
+
+  .binder-nav-label strong {
+    font-size: 15px;
+  }
+
+  .binder-nav-label small {
+    font-size: 10px;
+  }
+}
+
+/* Format des pages (9 ou 12 pochettes) : réglage discret sous le classeur. */
+.binder-format {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 10px;
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.binder-format span {
+  margin-right: 6px;
+}
+
+.binder-format button {
+  min-width: 34px;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid var(--c-border);
+  background: transparent;
+  color: var(--c-muted-2);
+  font: inherit;
+  cursor: pointer;
+}
+
+.binder-format button.active {
+  border-color: var(--c-cyan);
+  color: var(--c-cyan);
+}
