@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Fichiers que l'app peut partager (export de la collection) ou ouvrir (mise à jour) :
+<!-- Fichiers que l'app peut ouvrir avec une autre appli (APK de mise à jour, voir AppUpdaterPlugin) :
      uniquement son propre dossier cache. -->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <cache-path name="cache" path="." />

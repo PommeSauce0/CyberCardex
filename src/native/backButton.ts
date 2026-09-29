@@ -3,6 +3,8 @@ import { Capacitor } from '@capacitor/core';
 import { useEffect, useRef } from 'react';
 import type { createBrowserRouter } from 'react-router-dom';
 
+import { historyIndex } from '../navigation/backTrail';
+
 type Router = ReturnType<typeof createBrowserRouter>;
 
 /** Fenêtres ouvertes par-dessus la page (visionneuse…) : le retour les ferme d'abord. */
@@ -30,8 +32,11 @@ export function setupAndroidBackButton(router: Router) {
   if (!Capacitor.isNativePlatform()) {
     return;
   }
-  void App.addListener('backButton', ({ canGoBack }) => {
+  void App.addListener('backButton', () => {
     const top = handlers[handlers.length - 1];
+    // `canGoBack` d'Android reste à false malgré l'historique : on lit la position que
+    // le routeur enregistre dans chaque entrée (0 = première page ouverte).
+    const canGoBack = historyIndex() > 0;
     if (top) {
       top.current();
     } else if (router.state.location.pathname !== '/') {

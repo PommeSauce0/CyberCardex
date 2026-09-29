@@ -1,0 +1,143 @@
+/* Panneau « Quelle version ? » : feuille en bas sur téléphone, fenêtre centrée sur grand écran. */
+
+.version-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 4, 6, 0.78);
+  animation: version-fade 160ms ease-out;
+}
+
+.version-sheet {
+  --cut: 14px;
+  --cut-color: var(--c-border-strong);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(100%, 720px);
+  max-height: min(82vh, 760px);
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-bg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+
+.version-sheet-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--c-border-soft);
+}
+
+.version-sheet-header div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.version-sheet-header strong {
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.version-sheet-header span {
+  overflow: hidden;
+  color: var(--c-text-soft);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.version-sheet-header button {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.version-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 12px 10px;
+  padding: 14px 16px 18px;
+  overflow-y: auto;
+}
+
+.version-option {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.version-option:hover {
+  border-color: var(--c-cyan);
+}
+
+.version-option.current {
+  border-color: var(--c-yellow);
+  background: var(--c-yellow-dim);
+}
+
+.version-option img {
+  display: block;
+  width: 100%;
+  margin-bottom: 4px;
+  aspect-ratio: 733 / 1024;
+  object-fit: contain;
+}
+
+.version-option strong {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.version-option small {
+  overflow: hidden;
+  color: var(--c-muted-2);
+  font-size: 11px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes version-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .version-backdrop {
+    place-items: end stretch;
+    padding: 0;
+  }
+
+  .version-sheet {
+    width: 100%;
+    max-height: 78vh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .version-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 6px;
+  }
+}

@@ -397,3 +397,74 @@
     gap: 14px;
   }
 }
+
+/* ---------- Recadrage d'une photo importée ---------- */
+
+.scan-crop-viewport {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.scan-crop-viewport:active {
+  cursor: grabbing;
+}
+
+.scan-crop-viewport img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* Zoom posé dans le coin de la photo (en plus du pincement) */
+.scan-crop-zoom {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(6, 7, 10, 0.78);
+}
+
+.scan-crop-zoom button {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--c-text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.scan-crop-zoom button + button {
+  border-top: 1px solid var(--c-border);
+}
+
+.scan-crop-zoom button:active {
+  background: var(--c-cyan-dim);
+  color: var(--c-cyan);
+}
+
+/* Déclencheur « Analyser » : même bouton rond que la caméra, avec l'icône de visée. */
+.scan-analyse span {
+  display: grid;
+  place-items: center;
+  color: var(--c-ink);
+}
+
+.scan-analyse svg {
+  width: 26px;
+  height: 26px;
+}
+
+.scan-analyse:disabled {
+  opacity: 0.4;
+}

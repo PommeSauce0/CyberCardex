@@ -34,6 +34,16 @@ describe('parseDeck', () => {
     expect(unknown).toEqual(['3x Carte inventée']);
   });
 
+  it('refuse les quantités nulles ou démesurées (ligne signalée, pas importée)', () => {
+    const huge = `${'9'.repeat(400)}x V - Streetkid`;
+    const { lines, unknown } = parseDeck(
+      ['0x V - Streetkid', huge, '100 V - Streetkid'].join('\n'),
+    );
+    expect(lines).toEqual([]);
+    expect(unknown).toEqual(['0x V - Streetkid', huge, '100 V - Streetkid']);
+    expect(parseDeck('99x V - Streetkid').lines[0]?.quantity).toBe(99);
+  });
+
   it('reconnaît les numéros Beta', () => {
     const { lines } = parseDeck('2 β001');
     expect(lines[0]?.card.id).toBe('adam-smasher-ender-of-legends');

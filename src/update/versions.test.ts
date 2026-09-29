@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isNewer, plainNotes } from './versions';
+import { isNewer, plainNotes, releaseNotes } from './versions';
 
 describe('isNewer', () => {
   it('compare les versions numériquement', () => {
@@ -28,5 +28,44 @@ describe('plainNotes', () => {
 
   it('accepte une note absente', () => {
     expect(plainNotes()).toBe('');
+  });
+});
+
+describe('releaseNotes', () => {
+  const body = [
+    'Unofficial fan project — not affiliated.',
+    '',
+    '**FR** — CyberCardex 1.1.0',
+    '',
+    'Sinon, télécharge `CyberCardex-1.1.0.apk` ci-dessous.',
+    '',
+    'Nouveautés',
+    '- Decks **revus**',
+    '',
+    'Corrections',
+    '- Bouton retour',
+    '',
+    '**EN** — CyberCardex 1.1.0',
+    '',
+    'Otherwise, download the APK below.',
+    '',
+    "What's new",
+    '- Decks reworked',
+  ].join('\r\n');
+
+  it("garde seulement les listes de la langue de l'app", () => {
+    expect(releaseNotes(body, 'fr')).toBe(
+      'Nouveautés\n- Decks revus\n\nCorrections\n- Bouton retour',
+    );
+    expect(releaseNotes(body, 'en')).toBe("What's new\n- Decks reworked");
+  });
+
+  it("se rabat sur l'anglais pour une autre langue", () => {
+    expect(releaseNotes(body, 'de')).toBe("What's new\n- Decks reworked");
+  });
+
+  it('sans sections ni listes, garde tout le texte', () => {
+    expect(releaseNotes('Correctifs **divers**.', 'fr')).toBe('Correctifs divers.');
+    expect(releaseNotes(undefined, 'fr')).toBe('');
   });
 });

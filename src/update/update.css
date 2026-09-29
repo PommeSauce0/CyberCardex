@@ -1,46 +1,74 @@
-/* Bandeau « nouvelle version » en haut de l'app (fond opaque : WebView Samsung) */
+/* Banderole « ruban NCPD » en haut de l'app : bande cyan, hachures, bouton noir.
+   Fond opaque : WebView Samsung. */
 .update-banner {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 18px;
-  margin: 12px auto 0;
+  align-items: stretch;
+  margin: 10px auto 0;
   width: min(calc(100% - 24px), 1000px);
-  padding: 14px 16px;
-  border: 1px solid var(--c-cyan);
-  border-left-width: 4px;
-  background: var(--c-surface-2);
+  min-height: 36px;
+  overflow: hidden;
+  background: var(--c-cyan);
+  color: var(--c-ink);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.18);
+  animation: update-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.update-banner-hazard {
+  flex: none;
+  width: 34px;
+  background: repeating-linear-gradient(-45deg, var(--c-ink) 0 6px, transparent 6px 12px);
 }
 
 .update-banner-text {
-  flex: 1 1 220px;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
-}
-
-.update-banner-text strong {
-  display: block;
-  color: var(--c-cyan);
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.update-banner-text p {
-  margin: 4px 0 0;
+  margin: 0;
+  padding: 0 12px;
   overflow: hidden;
-  color: var(--c-muted-2);
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-overflow: ellipsis;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.update-banner-actions {
+.update-banner-text strong {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+.update-banner-install {
   display: flex;
-  flex-wrap: wrap;
+  flex: none;
   align-items: center;
-  gap: 8px;
+  padding: 0 16px 0 22px;
+  background: var(--c-ink);
+  color: var(--c-cyan);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  /* Coupe en biais côté ruban */
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.update-banner-install:hover {
+  color: var(--c-text);
+}
+
+@keyframes update-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 }
 
 .update-progress {
@@ -104,13 +132,16 @@
   white-space: pre-line;
 }
 
-.settings-section .update-note {
-  margin-top: 14px;
+.settings-update .update-note {
+  margin: 0 0 12px;
+}
+
+/* Réserve toujours une ligne, même vide : la page ne saute pas pendant la recherche. */
+.update-status {
+  min-height: 1.5em;
 }
 
 @media (max-width: 760px) {
-  .update-banner-actions,
-  .update-banner-actions .btn,
   .update-progress {
     width: 100%;
   }

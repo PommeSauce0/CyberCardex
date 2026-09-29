@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom';
 import { useCollection } from '../collection/CollectionContext';
 import { useQuickAdd } from '../collection/useQuickAdd';
 import { CloseIcon, ImageIcon, ScanIcon } from '../components/Icons';
-import QuickAddBar from '../components/QuickAddBar';
 import { getCardById, getPrintingById, getSetById, getThumbUrl } from '../data/catalog';
 import type { Printing } from '../data/types';
 import { showToast } from '../easter/events';
 import { useT } from '../i18n/useT';
-import { cameraAvailable, captureFromImage, captureFromVideoScales } from '../scan/capture';
+import { cameraAvailable, captureFromVideoScales } from '../scan/capture';
 import { findMatches, type Pixels, type ScanIndexEntry, type ScanMatch } from '../scan/descriptor';
+import PhotoCropper from '../scan/PhotoCropper';
 import { loadScanIndex } from '../scan/scanIndex';
 
 import './ScanPage.css';
@@ -77,6 +77,8 @@ export default function ScanPage() {
   const [justAdded, setJustAdded] = useState(false);
   // Photo prise : la vidéo est en pause sur l'image analysée.
   const [frozen, setFrozen] = useState(false);
+  // Photo importée, en cours de recadrage.
+  const [crop, setCrop] = useState<{ image: HTMLImageElement; url: string; error?: string }>();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const guideRef = useRef<HTMLDivElement>(null);
@@ -89,6 +91,8 @@ export default function ScanPage() {
   // Page encore affichée / caméra en cours d'ouverture (la permission peut prendre du temps).
   const mountedRef = useRef(true);
   const startingRef = useRef(false);
+  // Numéro de la dernière photo importée (les chargements précédents sont ignorés).
+  const photoIdRef = useRef(0);
   // Easter egg : cartes reconnues d'affilée, sans scan raté.
   const streakRef = useRef(0);
 
@@ -99,6 +103,17 @@ export default function ScanPage() {
       resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [resultId]);
+
+  // L'URL de la photo recadrée est libérée dès qu'on la quitte : annulation, analyse réussie,
+  // autre photo ou sortie du scanner.
+  const cropUrl = crop?.url;
+  useEffect(() => {
+    return () => {
+      if (cropUrl) {
+        URL.revokeObjectURL(cropUrl);
+      }
+    };
+  }, [cropUrl]);
 
   const hasCamera = cameraAvailable();
 
@@ -171,9 +186,12 @@ export default function ScanPage() {
     }
   }
 
-  /** Analyse la photo (plusieurs cadrages) ; renvoie vrai si une carte a été reconnue. */
+  /**
+   * Analyse la photo (plusieurs cadrages) ; renvoie vrai si une carte a été reconnue. `failure`
+   * : message en cas d'échec (consigne de la caméra, ou de recadrage pour une photo importée).
+   */
   const analyse = useCallback(
-    (pixelsList: Pixels[]) => {
+    (pixelsList: Pixels[], failure: string) => {
       if (!index) {
         return false;
       }
@@ -201,10 +219,9 @@ export default function ScanPage() {
       }
 
       streakRef.current = 0;
-      setStatus({
-        kind: 'error',
-        message: t.scan.notRecognised,
-      });
+      // Plus d'ancien résultat affiché sous un nouvel échec.
+      setResult(undefined);
+      setStatus({ kind: 'error', message: failure });
       return false;
     },
     [index, quickAdd.language, t],
@@ -242,7 +259,7 @@ export default function ScanPage() {
     }
     video.pause();
     setFrozen(true);
-    if (!analyse(pixels)) {
+    if (!analyse(pixels, t.scan.notRecognised)) {
       // Le temps de voir la photo ratée, puis retour à la visée.
       resumeTimerRef.current = window.setTimeout(resume, 1200);
     }
@@ -256,15 +273,45 @@ export default function ScanPage() {
     }
     const url = URL.createObjectURL(file);
     const image = new Image();
+    // Deux photos choisies coup sur coup : seule la dernière compte, même si l'autre charge après.
+    const photoId = ++photoIdRef.current;
+    const stale = () => !mountedRef.current || photoId !== photoIdRef.current;
     image.onload = () => {
-      analyse(captureFromImage(image));
-      URL.revokeObjectURL(url);
+      // Scanner quitté ou autre photo choisie entre-temps : personne ne libérera l'URL après nous.
+      if (stale()) {
+        URL.revokeObjectURL(url);
+        return;
+      }
+      // On passe au recadrage : la caméra s'éteint, l'analyse attend « Analyser ».
+      stopCamera();
+      setResult(undefined);
+      setStatus({ kind: 'idle' });
+      setCrop({ image, url });
+      requestAnimationFrame(() =>
+        stageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      );
     };
     image.onerror = () => {
-      setStatus({ kind: 'error', message: t.scan.imageError });
       URL.revokeObjectURL(url);
+      if (stale()) {
+        return;
+      }
+      setStatus({ kind: 'error', message: t.scan.imageError });
     };
     image.src = url;
+  }
+
+  function closeCrop() {
+    setCrop(undefined);
+  }
+
+  function analyseCrop(pixels: Pixels[]) {
+    if (analyse(pixels, t.scan.notRecognisedPhoto)) {
+      closeCrop();
+    } else if (crop) {
+      // Échec : on reste sur le recadrage pour ajuster et réessayer.
+      setCrop({ ...crop, error: t.scan.notRecognisedPhoto });
+    }
   }
 
   function addSelected() {
@@ -315,10 +362,16 @@ export default function ScanPage() {
         <p className="page-subtitle">{t.scan.subtitle}</p>
       </header>
 
-      <QuickAddBar quickAdd={quickAdd} inline hint={t.scan.quickAddHint} />
-
       <section ref={stageRef} className="scan-stage">
-        {cameraOn ? (
+        {crop ? (
+          <PhotoCropper
+            image={crop.image}
+            error={crop.error}
+            onAnalyse={analyseCrop}
+            onAdjust={() => crop.error && setCrop({ ...crop, error: undefined })}
+            onCancel={closeCrop}
+          />
+        ) : cameraOn ? (
           <div className="scan-camera">
             <div className={frozen ? 'scan-viewport frozen' : 'scan-viewport'}>
               <video ref={videoRef} playsInline muted aria-label={t.scan.preview} />

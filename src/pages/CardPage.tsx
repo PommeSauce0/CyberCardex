@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { useCollection } from '../collection/CollectionContext';
 import AddCopyForm from '../components/card/AddCopyForm';
@@ -15,9 +16,12 @@ import {
 } from '../data/catalog';
 import { COLOR_HEX, formatPrice, getFinishLabel, plural } from '../data/labels';
 import { cardmarketPriceDate, getCardmarketLink } from '../data/links';
+import { usePriceData } from '../data/livePrices';
 import type { Card, Printing } from '../data/types';
 import { EDGERUNNERS, isSpecialPrinting, playEdgerunners } from '../easter/events';
 import { useT } from '../i18n/useT';
+import { browsedPrintings } from '../navigation/browse';
+import BackLink from '../navigation/BackLink';
 import { useSettings } from '../settings/SettingsContext';
 
 import './CardPage.css';
@@ -117,6 +121,8 @@ function GameInfo({ card }: { card: Card }) {
 function Versions({ printing, versions }: { printing: Printing; versions: Printing[] }) {
   const { countPrinting } = useCollection();
   const t = useT();
+  // Changer de version garde la liste parcourue (flèches ‹ ›).
+  const location = useLocation();
 
   return (
     <section className="card-versions card-block-versions">
@@ -134,6 +140,7 @@ function Versions({ printing, versions }: { printing: Printing; versions: Printi
               key={version.id}
               to={`/cards/${version.id}`}
               replace
+              state={location.state}
               className={['card-version', current ? 'current' : '', count > 0 ? 'owned' : '']
                 .join(' ')
                 .trim()}
@@ -166,8 +173,10 @@ export default function CardPage() {
 
 function CardPageContent({ printingId }: { printingId?: string }) {
   const { countVariant, getItemsForPrinting, isWished, toggleWish } = useCollection();
-  const { preferredCardLanguage } = useSettings();
+  const { preferredCardLanguage, cardmarket: cardmarketMode } = useSettings();
   const t = useT();
+  const location = useLocation();
+  usePriceData();
 
   const [imageError, setImageError] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -195,9 +204,7 @@ function CardPageContent({ printingId }: { printingId?: string }) {
   if (!printing || !card || !set) {
     return (
       <main className="page">
-        <Link className="back" to="/">
-          ← {t.nav.home}
-        </Link>
+        <BackLink fallbackTo="/" fallbackLabel={t.nav.home} />
         <div className="empty-state">
           <strong>{t.card.notFoundTitle}</strong>
           <p>{t.card.notFoundText}</p>
@@ -223,22 +230,31 @@ function CardPageContent({ printingId }: { printingId?: string }) {
   const cardAlt = card.subtitle ? `${card.name}: ${card.subtitle}` : card.name;
 
   // Carte précédente / suivante dans la série (même ordre que la grille).
-  const setPrintings = getPreferredPrintingsBySet(set.id, preferredCardLanguage);
-  const position = setPrintings.findIndex((item) => item.variantKey === printing.variantKey);
-  const previous = position > 0 ? setPrintings[position - 1] : undefined;
-  const next = position >= 0 ? setPrintings[position + 1] : undefined;
+  // Carte précédente / suivante : dans la liste d'où l'on vient (recherche, wishlist, deck…),
+  // sinon dans la série (même ordre que la grille).
+  const browsed = browsedPrintings(location.state, printing.id);
+  const stepList = browsed ?? getPreferredPrintingsBySet(set.id, preferredCardLanguage);
+  const position = browsed
+    ? browsed.findIndex((item) => item.id === printing.id)
+    : stepList.findIndex((item) => item.variantKey === printing.variantKey);
+  const previous = position > 0 ? stepList[position - 1] : undefined;
+  const next = position >= 0 ? stepList[position + 1] : undefined;
+  const stepState = browsed ? location.state : null;
 
   const versions = getPrintingsByCard(card.id);
 
   return (
     <main className="page card-page">
       <nav className="card-page-nav">
-        <Link className="back" to={`/sets/${set.id}`}>
-          ← {set.name} {set.edition}
-        </Link>
+        <BackLink fallbackTo={`/sets/${set.id}`} fallbackLabel={`${set.name} ${set.edition}`} />
         <div className="card-stepper">
           {previous ? (
-            <Link to={`/cards/${previous.id}`} aria-label={t.card.previous} replace>
+            <Link
+              to={`/cards/${previous.id}`}
+              aria-label={t.card.previous}
+              replace
+              state={stepState}
+            >
               ‹ #{previous.number}
             </Link>
           ) : (
@@ -246,11 +262,11 @@ function CardPageContent({ printingId }: { printingId?: string }) {
           )}
           {position >= 0 && (
             <span className="card-stepper-position">
-              {position + 1} / {setPrintings.length}
+              {position + 1} / {stepList.length}
             </span>
           )}
           {next ? (
-            <Link to={`/cards/${next.id}`} aria-label={t.card.next} replace>
+            <Link to={`/cards/${next.id}`} aria-label={t.card.next} replace state={stepState}>
               #{next.number} ›
             </Link>
           ) : (
@@ -391,15 +407,17 @@ function CardPageContent({ printingId }: { printingId?: string }) {
               </dd>
             </dl>
             <div className="external-links">
-              <a
-                className="btn source-button"
-                href={cardmarket.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {cardmarket.exact ? t.card.cardmarketView : t.card.cardmarketSearch}
-                <span aria-hidden="true">↗</span>
-              </a>
+              {cardmarketMode !== 'off' && (
+                <a
+                  className="btn source-button"
+                  href={cardmarket.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {cardmarket.exact ? t.card.cardmarketView : t.card.cardmarketSearch}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              )}
               {printing.sourceUrl && (
                 <a
                   className="btn source-button"
@@ -412,7 +430,7 @@ function CardPageContent({ printingId }: { printingId?: string }) {
                 </a>
               )}
             </div>
-            {cardmarket.price !== undefined && (
+            {cardmarketMode === 'price' && cardmarket.price !== undefined && (
               <p className="cardmarket-price">
                 {t.card.cardmarketPrice(formatPrice(cardmarket.price), cardmarketPriceDate())}
               </p>
@@ -421,12 +439,16 @@ function CardPageContent({ printingId }: { printingId?: string }) {
         </div>
       </div>
 
-      {johnnyQuote && (
-        <p className="ee-quote" aria-hidden="true">
-          <small>Johnny Silverhand</small>
-          Wake the f*** up, Samurai. We have a city to burn.
-        </p>
-      )}
+      {/* Hors de la page (dans <body>) : la page s'anime à l'ouverture, et un élément fixe
+          à l'intérieur faisait passer la page au-dessus du menu pendant l'animation. */}
+      {johnnyQuote &&
+        createPortal(
+          <p className="ee-quote" aria-hidden="true">
+            <small>Johnny Silverhand</small>
+            Wake the f*** up, Samurai. We have a city to burn.
+          </p>,
+          document.body,
+        )}
 
       {viewerOpen && !imageError && (
         <CardViewer card={card} printing={printing} onClose={closeViewer} />

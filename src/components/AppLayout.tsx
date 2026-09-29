@@ -1,11 +1,12 @@
 import { Capacitor } from '@capacitor/core';
-import { Suspense, type ReactNode } from 'react';
-import { NavLink, Outlet, ScrollRestoration } from 'react-router-dom';
+import { Suspense, useEffect, type ReactNode } from 'react';
+import { NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 
 import { useCollection } from '../collection/CollectionContext';
 import EasterEggLayer from '../easter/EasterEggLayer';
 import { onLogoTap } from '../easter/events';
 import { useT } from '../i18n/useT';
+import { recordPage } from '../navigation/backTrail';
 import { UpdateBanner } from '../update/UpdatePanel';
 
 import './AppLayout.css';
@@ -31,10 +32,11 @@ const icons: Record<string, ReactNode> = {
     </>
   ),
   wishlist: <path d="m12 3 2.8 5.9 6.2.8-4.6 4.3 1.2 6.2L12 17.2 6.4 20.2l1.2-6.2L3 9.7l6.2-.8z" />,
+  // Engrenage anguleux à 8 dents, écrou hexagonal au centre.
   settings: (
     <>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" />
+      <path d="M9.8 4.7 10.6 1.9h2.8l.8 2.8 1.4.6 2.5-1.4 2 2-1.4 2.5.6 1.4 2.8.8v2.8l-2.8.8-.6 1.4 1.4 2.5-2 2-2.5-1.4-1.4.6-.8 2.8h-2.8l-.8-2.8-1.4-.6-2.5 1.4-2-2 1.4-2.5-.6-1.4-2.8-.8v-2.8l2.8-.8.6-1.4-1.4-2.5 2-2 2.5 1.4z" />
+      <path d="M15.4 12 13.7 14.9h-3.4L8.6 12l1.7-2.9h3.4z" />
     </>
   ),
 };
@@ -74,6 +76,10 @@ const NAV_ITEMS = Capacitor.isNativePlatform()
 export default function AppLayout() {
   const { wishlist } = useCollection();
   const t = useT();
+
+  // Retient chaque page visitée à sa place dans l'historique (liens « ← … »).
+  const location = useLocation();
+  useEffect(() => recordPage(location.pathname + location.search), [location]);
 
   return (
     <div className="app-shell">

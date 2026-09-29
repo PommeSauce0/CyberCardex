@@ -1,5 +1,9 @@
 import type { Messages } from './index';
 
+/** "a, b and c" */
+const list = (parts: string[]) =>
+  parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : (parts[0] ?? '');
+
 /** English plural: anything but 1 (« 0 cards », « 1 card », « 2 cards »). */
 const s = (count: number, singular: string, plural = `${singular}s`) =>
   `${count} ${count === 1 ? singular : plural}`;
@@ -236,28 +240,37 @@ export const en: Messages = {
     ownedElsewhere: (count: number) => `You already own ×${count} in another version`,
     toFind: 'To find',
     price: 'Price',
+    cardmarket: 'Cardmarket',
     remove: 'Remove',
   },
 
   settings: {
-    interfaceTitle: 'Interface language',
-    interfaceText: 'The app texts. Card texts follow the setting below.',
-    cardLanguageTitle: 'Card language',
-    cardLanguageText: 'CyberCardex shows this language whenever a matching printing exists.',
-    cardLanguageOption: {
-      FR: 'Use French printings when they exist.',
-      EN: 'Use English printings when they exist.',
-    },
-    fallbackTitle: 'Automatic fallback',
-    fallbackText:
-      'If a printing does not exist in your language, the available version is shown (e.g. BETA stays in EN). Your copies always keep their real language, and a FR copy counts towards progress even when English is shown.',
-    backupTitle: 'Backup',
-    backupText:
-      'Your collection is stored on this device only. Export it regularly so you never lose it and can move it to another device.',
-    exportJson: 'Export backup (.json)',
-    exportCsv: 'Export for Excel (.csv)',
-    import: 'Import a backup…',
+    groupDisplay: 'Display',
+    appLanguage: 'App language',
+    cardLanguage: 'Card language',
+    cardLanguageHint: 'If a card does not exist in this language, the other version is shown.',
+    uiSize: 'Interface size',
+    uiSizeHint: 'Buttons and filters, on phones.',
+    uiSizes: { compact: 'Compact', normal: 'Normal' },
+    backupHint:
+      'Everything stays on this device. The backup holds your collection, wishlist, decks and settings: keep it so you never lose them or to switch devices.',
+    deckCreation: 'Deck creation',
+    deckCreationHint:
+      'Guided: you first pick your 3 Legends, which set your colors and RAM. Free: you start from an empty deck.',
+    deckCreations: { guided: 'Guided', free: 'Free' },
+    groupExperimental: 'Experimental features',
+    experimentalIntro: 'In testing: they may change or disappear.',
+    cardmarketHint: 'Link to the card on Cardmarket, with or without a price guide.',
+    cardmarketModes: { link: 'Link', price: 'Link + price', off: 'Off' },
+    aboutCredits: 'Credits and sources',
+    groupDanger: 'Danger zone',
+    resetHint: 'Deletes your copies, wishlist and decks from this device.',
+    resetButton: 'Clear…',
+    exportJson: 'Back up',
+    exportCsv: 'Excel export',
+    import: 'Import…',
     confirmImport: 'Confirm import',
+    importNow: 'Import',
     importReady: 'Backup ready to import',
     importSummary: (copies: number, wishes: number, rejected: number, unknown: number) =>
       [
@@ -270,33 +283,74 @@ export const en: Messages = {
         .join(' • '),
     merge: 'Merge with my collection',
     replace: 'Replace my collection',
-    confirmReplace: (count: number) =>
-      `Replace your current collection (${s(count, 'copy', 'copies')}) with the backup?`,
     imported: (added: number, duplicates: number, unknown: number) =>
       `${s(added, 'copy', 'copies')} imported` +
       (duplicates > 0 ? ` (${duplicates} already there)` : '') +
       (unknown > 0 ? ` • ${unknown} linked to printings missing from the catalogue` : '') +
       '.',
-    confirmReset: (count: number) =>
-      `Permanently delete your collection (${s(count, 'copy', 'copies')}) and your wishlist?\n\nRemember to export a backup first.`,
-    resetDone: 'Collection and wishlist cleared.',
-    dataTitle: 'Data',
-    catalog: 'Catalogue',
+    wipeKicker: '// Warning — danger zone',
+    wipeTitle: 'Erase your Cardex?',
+    wipeText: (copies: number, wishes: number, decks: number) =>
+      `Your collection (${s(copies, 'copy', 'copies')}), your wishlist (${s(wishes, 'card')}) and your decks (${s(decks, 'deck')}) will be deleted from this device.`,
+    wipeKeep:
+      'Only your settings are kept. Remember to back up first: the backup also keeps your decks.',
+    confirmBackup: 'Back up first',
+    confirmContinue: 'Continue',
+    confirmFinalTitle: 'Final confirmation',
+    wipeFinalText: 'This is permanent: without a backup, there is no way back.',
+    wipeHold: 'Hold to erase',
+    wipeHolding: 'Erasing…',
+    psychoWarning: 'Cyberpsychosis detected',
+    psychoMaxTac: '// MaxTac inbound',
+    replaceKicker: '// Restore — backup',
+    replaceTitle: 'Replace your data?',
+    replaceText: (copies: number, wishes: number, decks: boolean, settings: boolean) =>
+      `${list([
+        `Your collection (${s(copies, 'copy', 'copies')})`,
+        `your wishlist (${s(wishes, 'card')})`,
+        ...(decks ? ['your decks'] : []),
+        ...(settings ? ['your settings'] : []),
+      ])} will be replaced by the backup.`,
+    replaceFrom: (copies: number, wishes: number, decks?: number) =>
+      `The backup holds ${list([
+        s(copies, 'copy', 'copies'),
+        `${s(wishes, 'card')} in the wishlist`,
+        ...(decks === undefined ? [] : [s(decks, 'deck')]),
+      ])}.`,
+    replaceFinalText:
+      'Your current data will be overwritten. Back it up first if you want to be able to go back.',
+    replaceHold: 'Hold to replace',
+    replaceHolding: 'Replacing…',
+    mergeKicker: '// Merge — backup',
+    mergeTitle: 'Merge with your data?',
+    mergeText:
+      'Everything is added to your current data and nothing is deleted. Copies and decks you already have are not duplicated, and your settings stay as they are.',
+    mergeFinalText:
+      'This cannot be undone: the added data cannot be removed in one go. Back up first if you want to be able to go back.',
+    mergeHold: 'Hold to merge',
+    mergeHolding: 'Merging…',
+    resetDone: 'Cardex cleared: collection, wishlist and decks deleted.',
+    importedDecks: (count: number) => `${s(count, 'deck')} imported.`,
+    decksCount: (count: number) => s(count, 'deck'),
+    exportFailed: 'Export failed: the file could not be saved. Please try again.',
+    exportSaved: (name: string) => `File saved: ${name}`,
     catalogCounts: (cards: number, printings: number, sets: number) =>
       `${s(cards, 'card')} • ${s(printings, 'printing')} • ${s(sets, 'set')}`,
     collectionCounts: (copies: number, wishes: number) =>
       `${s(copies, 'copy', 'copies')} • ${wishes} in wishlist`,
-    reset: 'Clear my collection…',
+    reset: 'Clear my Cardex',
   },
 
   about: {
     title: 'About',
     version: 'Version',
+    officialLinks: 'Official Cyberpunk TCG links',
+    officialSite: 'Official website',
+    howToPlay: 'How to play',
     unofficial:
       'CyberCardex is a free, unofficial fan project, not affiliated with WeirdCo or CD PROJEKT.',
     credits:
       'Cyberpunk TCG is developed by WeirdCo in collaboration with CD PROJEKT RED. Cyberpunk, Cyberpunk 2077 and the card artwork belong to CD PROJEKT S.A. and their rights holders.',
-    sources: 'Sources',
     cardData: 'Cards: official data and images from',
     prices: 'Prices: Cardmarket, for reference only.',
     privacyTitle: 'Privacy',
@@ -304,6 +358,8 @@ export const en: Messages = {
       'No data is collected: no account, no ads, no analytics. Your collection stays on this device, unless you export it yourself.',
     privacyUpdates:
       'In the Android app, checking for updates contacts GitHub: GitHub then sees your IP address, like any website.',
+    privacyPrices:
+      'With Cardmarket set to “Link + price”, today’s prices are downloaded from GitHub at launch (same principle).',
     licenseTitle: 'Licence',
     license: 'Open-source code under the MIT licence, provided as is, without warranty.',
     sourceCode: 'Source code on GitHub',
@@ -313,19 +369,20 @@ export const en: Messages = {
     title: 'App',
     text: 'New versions are published on GitHub and install over the app: your collection is kept.',
     check: 'Check for updates',
-    checking: 'Checking…',
+    checking: 'Checking for updates…',
     upToDate: 'You have the latest version.',
     available: (version: string) => `New version ${version} available`,
     size: (mb: number) => `${mb} MB`,
+    kicker: 'Update available',
     notes: "What's new",
     install: 'Install',
-    later: 'Later',
     downloading: (percent: number) => (percent >= 0 ? `Downloading… ${percent}%` : 'Downloading…'),
     needsPermission:
       'Allow CyberCardex to install apps in the screen that opens, then come back: the install will resume by itself.',
     openPermission: 'Open the setting',
     installing: 'The Android installer is open. Your cards are kept.',
     retry: 'Try again',
+    timeout: 'GitHub is not responding (15 s timeout).',
     checkFailed: "Can't reach GitHub. Check your connection.",
     failed: (message: string) => `Failed: ${message}`,
   },
@@ -333,12 +390,18 @@ export const en: Messages = {
   scan: {
     eyebrow: 'Visual recognition',
     subtitle: 'Take a photo of a card: it is recognised on your phone, offline.',
-    quickAddHint: 'Condition and language applied to cards added from the scanner.',
     loading: 'Loading fingerprints…',
     recognised: 'Card recognised',
     aim: 'Frame the card, then press the shutter',
     notRecognised:
       'No card recognised. Fill the frame with the card, hold the phone still and avoid glare.',
+    notRecognisedPhoto:
+      'No card recognised in this photo. Place the card so it fills the frame, then try again.',
+    cropHint: 'Place the card in the frame: drag to move, pinch to zoom, twist to rotate.',
+    rotateShort: 'Rotate',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+    analyse: 'Analyse',
     imageError: 'Could not read this image.',
     cameraDenied: 'Camera access denied. Allow it in the settings, or import a photo.',
     cameraError: 'Could not open the camera. You can import a photo instead.',
@@ -365,8 +428,6 @@ export const en: Messages = {
   decks: {
     eyebrow: 'Deckbuilding',
     title: 'Decks',
-    subtitle:
-      'Add cards by name (or paste a list): the app tells you what you already own and what you are missing.',
     searchPlaceholder: 'Add a card: type its name…',
     noMatch: 'No matching card.',
     ownedCount: (count: number) => `owned ×${count}`,
@@ -374,17 +435,17 @@ export const en: Messages = {
     inDeck: (count: number) => `×${count} in deck`,
     importToggle: 'Import a list',
     importButton: 'Add these cards to the deck',
-    copy: 'Copy list',
-    copied: 'List copied ✓',
-    copyFailed: 'Copy is not available here: use “Export (.txt)”.',
-    exportFile: 'Export (.txt)',
+    copy: 'Copy',
+    copied: 'Copied ✓',
+    fileSaved: 'Saved ✓',
+    copyFailed: 'Copy is not available here: use “Export” (.txt file).',
+    exportFile: 'Export',
     otherType: 'Other',
     less: (name: string) => `Remove 1 ${name}`,
     more: (name: string) => `Add 1 ${name}`,
     emptyTitle: 'Empty deck',
     emptyText: 'Search a card by name above, or import a list.',
     saved: 'My decks',
-    new: 'New',
     untitled: 'Untitled deck',
     namePlaceholder: 'Deck name',
     textPlaceholder: [
@@ -397,8 +458,6 @@ export const en: Messages = {
     confirmDelete: (name: string) => `Delete the deck “${name}”?`,
     unknown: (count: number) => `${s(count, 'unrecognised line')}:`,
     owned: 'Cards owned',
-    missing: 'To find',
-    missingCards: (count: number) => s(count, 'different card'),
     addMissing: 'Add missing cards to the wishlist',
     wishAdded: (count: number) => `${s(count, 'card')} added to the wishlist.`,
     wishAlready: 'All already in your wishlist.',
@@ -406,6 +465,56 @@ export const en: Messages = {
     rowMissing: (owned: number, missing: number) => `owned ×${owned} • ${missing} missing`,
     rowNone: (missing: number) => `${missing} missing`,
     rowOk: (owned: number) => `owned ×${owned} • ✓`,
+    pickTitle: 'Pick your 3 Legends',
+    pickSubtitle:
+      'They set the deck colors and the RAM of each color. Two Legends cannot share the same name.',
+    pickCount: (count: number) => `Legends ${count}/3`,
+    pickContinue: 'Continue',
+    pickSkip: 'Skip',
+    pickSameName: 'Name taken',
+    pickSelected: 'Picked',
+    versionTitle: 'Which version?',
+    versionsCount: (count: number) => `${count} versions`,
+    versionChange: (name: string) => `Change the version of ${name}`,
+    listSubtitle: 'Your decks, with the cards you already own and the deckbuilding rules.',
+    listEmptyTitle: 'No deck yet',
+    listEmptyText: 'Create your first deck, or paste a list to keep it here.',
+    create: 'Create a deck',
+    createShort: 'Create',
+    importShort: 'Import',
+    importCreate: 'Create the deck',
+    newDeck: 'New deck',
+    noLegend: 'No Legend',
+    legendsCount: (count: number) => `Legends ${count}/3`,
+    cardsCount: (count: number) => `Cards ${count} (40–50)`,
+    legal: '✓ Legal',
+    issuesCount: (count: number) => s(count, 'issue'),
+    ownedPercent: (value: number) => `${value}% owned`,
+    ram: (color: string, value: number) => `${color} ${value}`,
+    ramTitle: 'RAM provided by the Legends, by color',
+    issueLegendCount: (count: number) => `${s(count, 'Legend')} (3 needed)`,
+    issueLegendName: (name: string) => `Several Legends named ${name}`,
+    issueCardCount: (count: number) =>
+      `${s(count, 'card')} besides Legends (${count < 40 ? 'minimum 40' : 'maximum 50'})`,
+    issueCopies: (name: string, quantity: number, max: number) =>
+      `${name}: ${quantity} copies (${max} max)`,
+    issueRam: (name: string, color: string, need: number, have: number) =>
+      `${name}: needs ${need} ${color} RAM, your Legends give ${have}`,
+    sortBy: 'Sort by',
+    sorts: { type: 'Type', ram: 'RAM', color: 'Color', cost: 'Cost', name: 'Name' },
+    groupLegends: 'Legends',
+    groupCards: 'Cards',
+    groupNoRam: 'No RAM',
+    groupNoCost: 'No cost',
+    maxReached: (max: number) => `${max} max`,
+    stats: 'Statistics',
+    costCurve: 'Cost curve (Legends excluded)',
+    noCost: 'none',
+    byColor: 'Colors',
+    byType: 'Types',
+    completeCost: 'Cost to complete',
+    completeCostHint: (date: string) => `Cheapest version on Cardmarket (prices from ${date})`,
+    noPrice: (count: number) => s(count, 'card without a price', 'cards without a price'),
   },
 
   history: {
@@ -432,11 +541,18 @@ export const en: Messages = {
     reload: 'Reload',
   },
 
+  storage: {
+    writeFailed:
+      "Couldn't save to this device (storage full or unavailable): your latest changes may be lost. Make a backup below.",
+  },
+
   importErrors: {
     notJson: 'This file is not valid JSON.',
     otherApp: 'This file does not come from CyberCardex.',
     unknownFormat: 'Unrecognised backup format.',
     noCollection: 'The backup contains no collection.',
+    newerVersion:
+      'This backup comes from a newer version of CyberCardex. Update the app to import it.',
   },
 
   /** Excel export: English format (comma separator, decimal point). */

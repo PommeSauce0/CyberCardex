@@ -19,7 +19,7 @@ export type Pixels = {
 };
 
 /** Position supposée de la carte dans l'image (pixels), avec une éventuelle inclinaison. */
-export type Window = { x: number; y: number; width: number; height: number; angle?: number };
+type Window = { x: number; y: number; width: number; height: number; angle?: number };
 
 type Region = { x0: number; y0: number; x1: number; y1: number; cols: number; rows: number };
 

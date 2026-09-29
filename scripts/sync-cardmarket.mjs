@@ -16,6 +16,8 @@
  * Le même produit sert aux impressions EN et FR (la langue est un filtre Cardmarket).
  */
 import { readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const GAME = 23;
 const BASE = 'https://downloads.s3.cardmarket.com/productCatalog';
@@ -147,12 +149,41 @@ for (const [idExpansion, list] of expansions) {
   }
 }
 
-writeFileSync(
-  new URL('../src/data/cardmarket.json', import.meta.url),
-  `${JSON.stringify({ updatedAt: createdAt, products: links }, null, 2)}\n`,
-);
+// Garde-fous (le script tourne aussi chaque nuit sans personne, voir .github/workflows) :
+// pas de prix plus anciens que ceux déjà publiés, pas de chute brutale des cartes reliées
+// (format Cardmarket changé, extension renommée…). Dans ces cas, rien n'est écrit.
+const outIndex = process.argv.indexOf('--out');
+const output =
+  outIndex > 0
+    ? path.resolve(process.argv[outIndex + 1])
+    : fileURLToPath(new URL('../src/data/cardmarket.json', import.meta.url));
+let previous;
+try {
+  previous = JSON.parse(readFileSync(output));
+} catch {
+  previous = undefined;
+}
+const linkedCount = Object.keys(links).length;
+const previousCount = previous ? Object.keys(previous.products ?? {}).length : 0;
+const pricedCount = Object.values(links).filter((link) => link.trend || link.low).length;
+const problems = [
+  previous && Date.parse(createdAt) < Date.parse(previous.updatedAt)
+    ? `prix du ${createdAt} plus anciens que ceux publiés (${previous.updatedAt})`
+    : '',
+  linkedCount < previousCount * 0.9
+    ? `${linkedCount} impressions reliées au lieu de ${previousCount} (chute de plus de 10 %)`
+    : '',
+  pricedCount === 0 ? 'aucun prix dans le guide Cardmarket' : '',
+].filter(Boolean);
+if (problems.length > 0) {
+  console.error(report.join('\n'));
+  console.error(`✗ Rien n'est écrit :\n  ${problems.join('\n  ')}`);
+  process.exit(1);
+}
+
+writeFileSync(output, `${JSON.stringify({ updatedAt: createdAt, products: links }, null, 2)}\n`);
 
 console.log(report.join('\n'));
 console.log(
-  `✓ src/data/cardmarket.json : ${Object.keys(links).length} impressions reliées (prix du ${createdAt.slice(0, 10)})`,
+  `✓ ${path.relative(process.cwd(), output)} : ${Object.keys(links).length} impressions reliées (prix du ${createdAt.slice(0, 10)})`,
 );

@@ -4,7 +4,7 @@ import { useSyncExternalStore } from 'react';
 
 import { messages } from '../i18n';
 
-import { isNewer, plainNotes } from './versions';
+import { isNewer } from './versions';
 
 /*
  * Mises à jour sans store : chaque version de l'APK est publiée comme « release » sur
@@ -20,8 +20,6 @@ const UPDATE_REPO = 'PommeSauce0/CyberCardex';
 const FEED =
   import.meta.env.VITE_UPDATE_FEED ||
   (UPDATE_REPO ? `https://api.github.com/repos/${UPDATE_REPO}/releases/latest` : '');
-
-const DISMISSED_KEY = 'cybercardex.update.dismissed';
 
 type AppUpdaterPlugin = {
   canInstall(): Promise<{ allowed: boolean }>;
@@ -51,7 +49,6 @@ export type UpdateState = {
   release?: Release;
   percent?: number;
   error?: string;
-  dismissed?: boolean;
 };
 
 /** Les mises à jour ne concernent que l'app Android (le site se met à jour tout seul). */
@@ -82,15 +79,9 @@ type GithubRelease = {
   assets?: { name: string; browser_download_url: string; size: number }[];
 };
 
-function readDismissed() {
-  try {
-    return localStorage.getItem(DISMISSED_KEY);
-  } catch {
-    return null;
-  }
-}
-
 // ---------- Actions ----------
+
+const CHECK_TIMEOUT_MS = 15_000;
 
 /** Cherche une nouvelle version. `manual` : demandée depuis les réglages. */
 export async function checkForUpdate(manual = false) {
@@ -103,6 +94,8 @@ export async function checkForUpdate(manual = false) {
     const response = await fetch(FEED, {
       cache: 'no-store',
       headers: { Accept: 'application/vnd.github+json' },
+      // Réseau bloqué : on abandonne au lieu de laisser « Recherche… » affiché indéfiniment.
+      signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
     });
     // 404 : aucune release publiée pour l'instant, donc rien de plus récent.
     if (response.status === 404) {
@@ -125,32 +118,22 @@ export async function checkForUpdate(manual = false) {
       current,
       release: {
         version,
-        notes: plainNotes(data.body),
+        // Texte brut de la release : la page Réglages en extrait la langue de l'app.
+        notes: data.body ?? '',
         url: asset.browser_download_url,
         size: asset.size,
       },
-      // Bandeau masqué pour cette version si on l'a fermé, sauf recherche manuelle.
-      dismissed: !manual && readDismissed() === version,
     });
   } catch (error) {
     // Hors connexion au lancement : on ne dérange pas, les réglages affichent l'erreur.
     setState({
       status: manual ? 'error' : 'idle',
-      error: (error as Error).message || messages().update.checkFailed,
+      error:
+        (error as Error).name === 'TimeoutError'
+          ? messages().update.timeout
+          : (error as Error).message || messages().update.checkFailed,
     });
   }
-}
-
-/** Ferme le bandeau jusqu'à la version suivante. */
-export function dismissUpdate() {
-  try {
-    if (state.release) {
-      localStorage.setItem(DISMISSED_KEY, state.release.version);
-    }
-  } catch {
-    // stockage indisponible : le bandeau reviendra au prochain lancement
-  }
-  setState({ dismissed: true });
 }
 
 let resumeHandle: PluginListenerHandle | undefined;

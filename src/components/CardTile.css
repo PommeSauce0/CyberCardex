@@ -256,15 +256,18 @@
   font-size: 11px;
 }
 
-/* Prix (Cardmarket) + Retirer, côte à côte sous la carte. */
+/* Prix (Cardmarket) + Retirer : côte à côte s'il y a la place, l'un sous l'autre sinon
+   (petites cartes sur téléphone : colonnes trop étroites pour deux boutons). */
 .wishlist-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
-.wishlist-price,
-.wishlist-remove {
+.wishlist-actions .wishlist-price,
+.wishlist-actions .wishlist-remove {
+  flex: 1 1 72px;
+  min-width: 0;
   min-height: 34px;
   padding: 0 8px;
   font-size: 13px;
@@ -346,7 +349,7 @@
 
 /* ---------- Mode ajout rapide ---------- */
 
-.card-tile-quick {
+.card-tile-cell {
   position: relative;
   min-width: 0;
 }

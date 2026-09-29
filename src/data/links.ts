@@ -1,22 +1,12 @@
 import { messages } from '../i18n';
 
-import cardmarket from './cardmarket.json';
+import { getPriceData } from './livePrices';
 import type { Card, Printing } from './types';
-
-type CardmarketProduct = {
-  id: number;
-  trend?: number;
-  low?: number;
-  trendFoil?: number;
-  lowFoil?: number;
-};
-
-const products = cardmarket.products as Record<string, CardmarketProduct>;
 
 /** Langues des vendeurs sur Cardmarket (filtre de la page produit). */
 const CARDMARKET_LANGUAGE: Record<string, number> = { EN: 1, FR: 2 };
 
-export type CardmarketLink = {
+type CardmarketLink = {
   url: string;
   /** Page de cette impression précise (sinon : recherche par nom). */
   exact: boolean;
@@ -24,9 +14,9 @@ export type CardmarketLink = {
   price?: number;
 };
 
-/** Date des prix embarqués (« 27/09 »). */
+/** Date des prix affichés (« 27/09 ») : du jour si téléchargés, sinon ceux de l'app. */
 export const cardmarketPriceDate = () =>
-  new Date(cardmarket.updatedAt).toLocaleDateString(messages().locale, {
+  new Date(getPriceData().updatedAt).toLocaleDateString(messages().locale, {
     day: '2-digit',
     month: '2-digit',
   });
@@ -36,7 +26,7 @@ export const cardmarketPriceDate = () =>
  * filtrée sur sa langue ; à défaut, la recherche du nom de la carte.
  */
 export function getCardmarketLink(card: Card, printing: Printing): CardmarketLink {
-  const product = products[printing.id];
+  const product = getPriceData().products[printing.id];
   if (!product) {
     const query = card.subtitle ? `${card.name} ${card.subtitle}` : card.name;
     return {
@@ -57,4 +47,18 @@ export function getCardmarketLink(card: Card, printing: Printing): CardmarketLin
     exact: true,
     price: candidates.find((value) => value !== undefined && value > 0),
   };
+}
+
+/**
+ * Prix de l'exemplaire le moins cher d'une carte, toutes versions confondues (pour jouer,
+ * la version importe peu) : les versions non foil d'abord, les foil à défaut.
+ */
+export function cheapestCardPrice(card: Card, printings: Printing[]): number | undefined {
+  const prices = (foil: boolean) =>
+    printings
+      .filter((printing) => (printing.finish === 'Foil') === foil)
+      .flatMap((printing) => getCardmarketLink(card, printing).price ?? []);
+  const standard = prices(false);
+  const pool = standard.length > 0 ? standard : prices(true);
+  return pool.length > 0 ? Math.min(...pool) : undefined;
 }

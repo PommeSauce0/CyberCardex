@@ -3,6 +3,10 @@
  * mêmes clés). Les fonctions servent aux phrases avec des nombres ou des noms.
  */
 
+/** « a, b et c » */
+const list = (parts: string[]) =>
+  parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts.at(-1)}` : (parts[0] ?? '');
+
 /** Pluriel français : à partir de 2 (« 0 carte », « 1 carte », « 2 cartes »). */
 const s = (count: number, singular: string, plural = `${singular}s`) =>
   `${count} ${count > 1 ? plural : singular}`;
@@ -239,29 +243,37 @@ export const fr = {
     ownedElsewhere: (count: number) => `Tu en as déjà ×${count} dans une autre version`,
     toFind: 'À trouver',
     price: 'Prix',
+    cardmarket: 'Cardmarket',
     remove: 'Retirer',
   },
 
   settings: {
-    interfaceTitle: "Langue de l'interface",
-    interfaceText: "Les textes de l'app. Le texte des cartes suit le réglage ci-dessous.",
-    cardLanguageTitle: 'Langue des cartes',
-    cardLanguageText:
-      "CyberCardex affiche cette langue lorsqu'une impression correspondante existe.",
-    cardLanguageOption: {
-      FR: "Utiliser les impressions françaises lorsqu'elles existent.",
-      EN: "Utiliser les impressions anglaises lorsqu'elles existent.",
-    },
-    fallbackTitle: 'Repli automatique',
-    fallbackText:
-      "Si une impression n'existe pas dans ta langue, la version disponible est affichée (ex. BETA reste en EN). Tes exemplaires gardent toujours leur vraie langue, et un exemplaire FR compte dans la progression même si tu affiches l'anglais.",
-    backupTitle: 'Sauvegarde',
-    backupText:
-      'Ta collection est stockée uniquement sur cet appareil. Exporte-la régulièrement pour ne rien perdre et pour la transférer sur un autre appareil.',
-    exportJson: 'Exporter la sauvegarde (.json)',
-    exportCsv: 'Exporter pour Excel (.csv)',
-    import: 'Importer une sauvegarde…',
+    groupDisplay: 'Affichage',
+    appLanguage: "Langue de l'app",
+    cardLanguage: 'Langue des cartes',
+    cardLanguageHint: "Si une carte n'existe pas dans cette langue, l'autre version s'affiche.",
+    uiSize: "Taille de l'interface",
+    uiSizeHint: 'Boutons et filtres, sur téléphone.',
+    uiSizes: { compact: 'Compacte', normal: 'Normale' },
+    backupHint:
+      "Tout reste sur cet appareil. La sauvegarde contient ta collection, ta wishlist, tes decks et tes réglages : garde-la pour ne rien perdre ou changer d'appareil.",
+    deckCreation: 'Création de deck',
+    deckCreationHint:
+      "Guidée : tu choisis d'abord tes 3 Légendes, qui fixent tes couleurs et ta RAM. Libre : tu pars d'un deck vide.",
+    deckCreations: { guided: 'Guidée', free: 'Libre' },
+    groupExperimental: 'Fonctions expérimentales',
+    experimentalIntro: 'En test : elles peuvent changer ou disparaître.',
+    cardmarketHint: 'Lien vers la carte sur Cardmarket, avec ou sans prix indicatif.',
+    cardmarketModes: { link: 'Lien', price: 'Lien + prix', off: 'Désactivé' },
+    aboutCredits: 'Crédits et sources',
+    groupDanger: 'Zone sensible',
+    resetHint: 'Supprime tes exemplaires, ta wishlist et tes decks de cet appareil.',
+    resetButton: 'Vider…',
+    exportJson: 'Sauvegarder',
+    exportCsv: 'Export Excel',
+    import: 'Importer…',
     confirmImport: "Confirmer l'import",
+    importNow: 'Importer',
     importReady: 'Sauvegarde prête à importer',
     importSummary: (copies: number, wishes: number, rejected: number, unknown: number) =>
       [
@@ -274,33 +286,74 @@ export const fr = {
         .join(' • '),
     merge: 'Fusionner avec ma collection',
     replace: 'Remplacer ma collection',
-    confirmReplace: (count: number) =>
-      `Remplacer ta collection actuelle (${s(count, 'exemplaire')}) par la sauvegarde ?`,
     imported: (added: number, duplicates: number, unknown: number) =>
       `${s(added, 'exemplaire importé', 'exemplaires importés')}` +
       (duplicates > 0 ? ` (${s(duplicates, 'déjà présent', 'déjà présents')})` : '') +
       (unknown > 0 ? ` • ${unknown} liés à des impressions absentes du catalogue` : '') +
       '.',
-    confirmReset: (count: number) =>
-      `Supprimer définitivement ta collection (${s(count, 'exemplaire')}) et ta wishlist ?\n\nPense à exporter une sauvegarde avant.`,
-    resetDone: 'Collection et wishlist vidées.',
-    dataTitle: 'Données',
-    catalog: 'Catalogue',
+    wipeKicker: '// Alerte — zone sensible',
+    wipeTitle: 'Effacer ta Cardex ?',
+    wipeText: (copies: number, wishes: number, decks: number) =>
+      `Ta collection (${s(copies, 'exemplaire')}), ta wishlist (${s(wishes, 'carte')}) et tes decks (${s(decks, 'deck')}) seront supprimés de cet appareil.`,
+    wipeKeep:
+      'Seuls tes réglages sont conservés. Pense à sauvegarder avant : la sauvegarde garde aussi tes decks.',
+    confirmBackup: "Sauvegarder d'abord",
+    confirmContinue: 'Continuer',
+    confirmFinalTitle: 'Dernière confirmation',
+    wipeFinalText: "C'est définitif : sans sauvegarde, impossible de revenir en arrière.",
+    wipeHold: 'Maintenir pour effacer',
+    wipeHolding: 'Effacement…',
+    psychoWarning: 'Cyberpsychose détectée',
+    psychoMaxTac: '// MaxTac en route',
+    replaceKicker: '// Restauration — sauvegarde',
+    replaceTitle: 'Remplacer tes données ?',
+    replaceText: (copies: number, wishes: number, decks: boolean, settings: boolean) =>
+      `${list([
+        `Ta collection (${s(copies, 'exemplaire')})`,
+        `ta wishlist (${s(wishes, 'carte')})`,
+        ...(decks ? ['tes decks'] : []),
+        ...(settings ? ['tes réglages'] : []),
+      ])} seront remplacés par ceux de la sauvegarde.`,
+    replaceFrom: (copies: number, wishes: number, decks?: number) =>
+      `La sauvegarde contient ${list([
+        s(copies, 'exemplaire'),
+        `${s(wishes, 'carte')} en wishlist`,
+        ...(decks === undefined ? [] : [s(decks, 'deck')]),
+      ])}.`,
+    replaceFinalText:
+      "Tes données actuelles seront écrasées. Sauvegarde-les d'abord si tu veux pouvoir revenir en arrière.",
+    replaceHold: 'Maintenir pour remplacer',
+    replaceHolding: 'Remplacement…',
+    mergeKicker: '// Fusion — sauvegarde',
+    mergeTitle: 'Fusionner avec tes données ?',
+    mergeText:
+      "Tout s'ajoute à tes données actuelles, sans rien supprimer. Les exemplaires et les decks déjà présents ne sont pas doublés, et tes réglages restent inchangés.",
+    mergeFinalText:
+      "Cette action est irréversible : les données ajoutées ne pourront pas être retirées d'un coup. Sauvegarde d'abord si tu veux pouvoir revenir en arrière.",
+    mergeHold: 'Maintenir pour fusionner',
+    mergeHolding: 'Fusion…',
+    resetDone: 'Cardex vidée : collection, wishlist et decks supprimés.',
+    importedDecks: (count: number) => `${s(count, 'deck importé', 'decks importés')}.`,
+    decksCount: (count: number) => s(count, 'deck'),
+    exportFailed: "Échec de l'export : le fichier n'a pas pu être enregistré. Réessaie.",
+    exportSaved: (name: string) => `Fichier enregistré : ${name}`,
     catalogCounts: (cards: number, printings: number, sets: number) =>
       `${s(cards, 'carte')} • ${s(printings, 'impression')} • ${s(sets, 'série')}`,
     collectionCounts: (copies: number, wishes: number) =>
       `${s(copies, 'exemplaire')} • ${wishes} en wishlist`,
-    reset: 'Vider ma collection…',
+    reset: 'Vider ma Cardex',
   },
 
   about: {
     title: 'À propos',
     version: 'Version',
+    officialLinks: 'Liens officiels de Cyberpunk TCG',
+    officialSite: 'Site officiel',
+    howToPlay: 'Comment jouer',
     unofficial:
       'CyberCardex est un projet de fan gratuit et non officiel, sans lien avec WeirdCo ni CD PROJEKT.',
     credits:
       'Cyberpunk TCG est développé par WeirdCo en collaboration avec CD PROJEKT RED. Cyberpunk, Cyberpunk 2077 et les visuels des cartes appartiennent à CD PROJEKT S.A. et à leurs ayants droit.',
-    sources: 'Sources',
     cardData: 'Cartes : données et images officielles de',
     prices: 'Prix : Cardmarket, à titre indicatif.',
     privacyTitle: 'Confidentialité',
@@ -308,6 +361,8 @@ export const fr = {
       "Aucune donnée n'est collectée : pas de compte, pas de publicité, pas de statistiques. Ta collection reste sur cet appareil, sauf quand tu l'exportes toi-même.",
     privacyUpdates:
       "Dans l'app Android, la recherche de mises à jour interroge GitHub : GitHub voit alors ton adresse IP, comme pour n'importe quel site.",
+    privacyPrices:
+      'Avec Cardmarket en « Lien + prix », les prix du jour sont téléchargés depuis GitHub au lancement (même principe).',
     licenseTitle: 'Licence',
     license: 'Code open source sous licence MIT, fourni tel quel, sans garantie.',
     sourceCode: 'Code source sur GitHub',
@@ -317,13 +372,13 @@ export const fr = {
     title: 'Application',
     text: "Les nouvelles versions sont publiées sur GitHub et s'installent par-dessus l'app : ta collection est conservée.",
     check: 'Rechercher une mise à jour',
-    checking: 'Recherche…',
+    checking: 'Recherche en cours…',
     upToDate: 'Tu as la dernière version.',
     available: (version: string) => `Nouvelle version ${version} disponible`,
     size: (mb: number) => `${mb} Mo`,
+    kicker: 'Mise à jour disponible',
     notes: 'Nouveautés',
     install: 'Installer',
-    later: 'Plus tard',
     downloading: (percent: number) =>
       percent >= 0 ? `Téléchargement… ${percent} %` : 'Téléchargement…',
     needsPermission:
@@ -331,6 +386,7 @@ export const fr = {
     openPermission: 'Ouvrir le réglage',
     installing: "L'installeur d'Android est ouvert. Tes cartes sont conservées.",
     retry: 'Réessayer',
+    timeout: 'GitHub ne répond pas (délai de 15 s dépassé).',
     checkFailed: 'Impossible de joindre GitHub. Vérifie ta connexion.',
     failed: (message: string) => `Échec : ${message}`,
   },
@@ -338,12 +394,19 @@ export const fr = {
   scan: {
     eyebrow: 'Reconnaissance visuelle',
     subtitle: 'Prends une carte en photo : elle est reconnue sur le téléphone, sans connexion.',
-    quickAddHint: 'État et langue appliqués aux cartes ajoutées depuis le scanner.',
     loading: 'Chargement des empreintes…',
     recognised: 'Carte reconnue',
     aim: 'Cadre la carte, puis appuie sur le déclencheur',
     notRecognised:
       'Aucune carte reconnue. Remplis le cadre avec la carte, tiens le téléphone immobile et évite les reflets.',
+    notRecognisedPhoto:
+      "Aucune carte reconnue sur cette photo. Place la carte pour qu'elle remplisse le cadre, puis réessaie.",
+    cropHint:
+      'Place la carte dans le cadre : glisse pour déplacer, pince pour zoomer, tourne à deux doigts.',
+    rotateShort: 'Tourner',
+    zoomIn: 'Zoomer',
+    zoomOut: 'Dézoomer',
+    analyse: 'Analyser',
     imageError: 'Impossible de lire cette image.',
     cameraDenied: 'Accès à la caméra refusé. Autorise-le dans les réglages, ou importe une photo.',
     cameraError: "Impossible d'ouvrir la caméra. Tu peux importer une photo à la place.",
@@ -370,8 +433,6 @@ export const fr = {
   decks: {
     eyebrow: 'Deckbuilding',
     title: 'Decks',
-    subtitle:
-      "Ajoute des cartes par leur nom (ou colle une liste) : l'app te dit ce que tu as déjà et ce qu'il te manque.",
     searchPlaceholder: 'Ajouter une carte : tape son nom…',
     noMatch: 'Aucune carte ne correspond.',
     ownedCount: (count: number) => `possédée ×${count}`,
@@ -379,17 +440,17 @@ export const fr = {
     inDeck: (count: number) => `×${count} dans le deck`,
     importToggle: 'Importer une liste',
     importButton: 'Ajouter ces cartes au deck',
-    copy: 'Copier la liste',
-    copied: 'Liste copiée ✓',
-    copyFailed: 'Copie impossible ici : utilise « Exporter (.txt) ».',
-    exportFile: 'Exporter (.txt)',
+    copy: 'Copier',
+    copied: 'Copié ✓',
+    fileSaved: 'Enregistré ✓',
+    copyFailed: 'Copie impossible ici : utilise « Exporter » (fichier .txt).',
+    exportFile: 'Exporter',
     otherType: 'Autres',
     less: (name: string) => `Retirer 1 ${name}`,
     more: (name: string) => `Ajouter 1 ${name}`,
     emptyTitle: 'Deck vide',
     emptyText: 'Cherche une carte par son nom ci-dessus, ou importe une liste.',
     saved: 'Mes decks',
-    new: 'Nouveau',
     untitled: 'Deck sans nom',
     namePlaceholder: 'Nom du deck',
     textPlaceholder: [
@@ -402,8 +463,6 @@ export const fr = {
     confirmDelete: (name: string) => `Supprimer le deck « ${name} » ?`,
     unknown: (count: number) => `${s(count, 'ligne non reconnue', 'lignes non reconnues')} :`,
     owned: 'Cartes possédées',
-    missing: 'À trouver',
-    missingCards: (count: number) => s(count, 'carte différente', 'cartes différentes'),
     addMissing: 'Ajouter les manquantes à la wishlist',
     wishAdded: (count: number) => `${s(count, 'carte ajoutée', 'cartes ajoutées')} à la wishlist.`,
     wishAlready: 'Déjà toutes dans ta wishlist.',
@@ -411,6 +470,56 @@ export const fr = {
     rowMissing: (owned: number, missing: number) => `possédée ×${owned} • il en manque ${missing}`,
     rowNone: (missing: number) => `il en manque ${missing}`,
     rowOk: (owned: number) => `possédée ×${owned} • ✓`,
+    pickTitle: 'Choisis tes 3 Légendes',
+    pickSubtitle:
+      'Elles fixent les couleurs du deck et la RAM de chaque couleur. Deux Légendes ne peuvent pas avoir le même nom.',
+    pickCount: (count: number) => `Légendes ${count}/3`,
+    pickContinue: 'Continuer',
+    pickSkip: 'Passer',
+    pickSameName: 'Nom déjà pris',
+    pickSelected: 'Choisie',
+    versionTitle: 'Quelle version ?',
+    versionsCount: (count: number) => `${count} versions`,
+    versionChange: (name: string) => `Changer la version de ${name}`,
+    listSubtitle: 'Tes decks, avec les cartes que tu as déjà et les règles de construction.',
+    listEmptyTitle: "Aucun deck pour l'instant",
+    listEmptyText: 'Crée ton premier deck, ou colle une liste pour la retrouver ici.',
+    create: 'Créer un deck',
+    createShort: 'Créer',
+    importShort: 'Importer',
+    importCreate: 'Créer le deck',
+    newDeck: 'Nouveau deck',
+    noLegend: 'Aucune Légende',
+    legendsCount: (count: number) => `Légendes ${count}/3`,
+    cardsCount: (count: number) => `Cartes ${count} (40–50)`,
+    legal: '✓ Légal',
+    issuesCount: (count: number) => s(count, 'problème'),
+    ownedPercent: (value: number) => `${value} % possédé`,
+    ram: (color: string, value: number) => `${color} ${value}`,
+    ramTitle: 'RAM apportée par les Légendes, par couleur',
+    issueLegendCount: (count: number) => `${s(count, 'Légende')} (il en faut 3)`,
+    issueLegendName: (name: string) => `Plusieurs Légendes nommées ${name}`,
+    issueCardCount: (count: number) =>
+      `${s(count, 'carte')} hors Légendes (${count < 40 ? 'minimum 40' : 'maximum 50'})`,
+    issueCopies: (name: string, quantity: number, max: number) =>
+      `${name} : ${quantity} exemplaires (${max} max)`,
+    issueRam: (name: string, color: string, need: number, have: number) =>
+      `${name} : RAM ${need} en ${color}, tes Légendes en donnent ${have}`,
+    sortBy: 'Trier par',
+    sorts: { type: 'Type', ram: 'RAM', color: 'Couleur', cost: 'Coût', name: 'Nom' },
+    groupLegends: 'Légendes',
+    groupCards: 'Cartes',
+    groupNoRam: 'Sans RAM',
+    groupNoCost: 'Sans coût',
+    maxReached: (max: number) => `${max} max`,
+    stats: 'Statistiques',
+    costCurve: 'Courbe de coût (hors Légendes)',
+    noCost: 'sans',
+    byColor: 'Couleurs',
+    byType: 'Types',
+    completeCost: 'Coût pour compléter',
+    completeCostHint: (date: string) => `Version la moins chère sur Cardmarket (prix du ${date})`,
+    noPrice: (count: number) => s(count, 'carte sans prix', 'cartes sans prix'),
   },
 
   history: {
@@ -437,11 +546,18 @@ export const fr = {
     reload: 'Recharger',
   },
 
+  storage: {
+    writeFailed:
+      "Enregistrement impossible sur l'appareil (stockage plein ou indisponible) : tes dernières modifications risquent d'être perdues. Fais une sauvegarde ci-dessous.",
+  },
+
   importErrors: {
     notJson: "Ce fichier n'est pas un JSON valide.",
     otherApp: 'Ce fichier ne vient pas de CyberCardex.',
     unknownFormat: 'Format de sauvegarde non reconnu.',
     noCollection: 'La sauvegarde ne contient pas de collection.',
+    newerVersion:
+      "Cette sauvegarde vient d'une version plus récente de CyberCardex. Mets l'app à jour pour l'importer.",
   },
 
   /** Export Excel : format français (point-virgule, virgule décimale). */

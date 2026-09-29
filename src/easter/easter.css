@@ -331,7 +331,8 @@
   font-weight: 600;
   line-height: 1.2;
   pointer-events: none;
-  transform: translateX(-50%);
+  /* translate (et non transform) : les animations d'entrée et de sortie gardent le centrage. */
+  translate: -50% 0;
   animation:
     ee-toast-in 300ms steps(5, end),
     ee-toast-out 400ms ease-in 3.2s forwards;

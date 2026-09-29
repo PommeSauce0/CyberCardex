@@ -18,6 +18,13 @@
 
 /* ---------- Desktop : barre en haut ---------- */
 
+/* Les défilements automatiques (scanner, résultat…) s'arrêtent sous la barre du haut. */
+@media (min-width: 761px) {
+  html {
+    scroll-padding-top: 62px;
+  }
+}
+
 .app-nav {
   position: sticky;
   top: 0;
@@ -152,6 +159,26 @@
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
+}
+
+/* Tablette en paysage, petite fenêtre : le logo et les six onglets ne tiennent pas en entier. */
+@media (max-width: 1120px) {
+  .app-nav {
+    padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
+  }
+
+  .brand-text {
+    display: none;
+  }
+
+  .app-nav-link {
+    padding: 0 10px;
+  }
+
+  .app-nav-link.active::after {
+    left: 10px;
+    right: 10px;
+  }
 }
 
 /* ---------- Mobile : barre en bas (safe areas pour Capacitor) ---------- */

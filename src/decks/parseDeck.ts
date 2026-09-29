@@ -14,7 +14,7 @@ import type { Card } from '../data/types';
  */
 
 type DeckLine = { card: Card; quantity: number };
-export type ParsedDeck = { lines: DeckLine[]; unknown: string[] };
+type ParsedDeck = { lines: DeckLine[]; unknown: string[] };
 
 // Index des noms : « nom sous-titre », nom seul (s'il est unique), noms français.
 const byName = new Map<string, Card>();
@@ -60,6 +60,9 @@ function findCard(label: string): Card | undefined {
   return byName.get(norm(text));
 }
 
+/** Au-delà, la ligne est considérée comme une erreur de saisie (un deck en compte ~50). */
+const MAX_QUANTITY = 99;
+
 export function parseDeck(text: string): ParsedDeck {
   const totals = new Map<string, DeckLine>();
   const unknown: string[] = [];
@@ -77,6 +80,12 @@ export function parseDeck(text: string): ParsedDeck {
         ? [Number(match[1]), match[2]]
         : [Number(match[2]), match[1]]
       : [1, line];
+
+    // Quantité impossible (0, ou nombre démesuré qui deviendrait Infinity) : ligne signalée.
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) {
+      unknown.push(line);
+      continue;
+    }
 
     const card = findCard(label.replace(/\s*\(.*\)\s*$/, ''));
     if (card) {

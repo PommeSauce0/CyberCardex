@@ -11,14 +11,21 @@ import {
 import { getPrintingById } from '../data/catalog';
 import type { CollectionItem } from '../data/types';
 import { emitCardAdded } from '../easter/events';
-import { backupRaw, createId, readJson, subscribeToKey, writeJson } from '../storage/storage';
+import {
+  backupRaw,
+  createId,
+  readJson,
+  subscribeToKey,
+  wasNormalized,
+  writeJson,
+} from '../storage/storage';
 
 import { sanitizeItems, sanitizeWishlist, type ParsedImport } from './collectionData';
 
 const COLLECTION_KEY = 'cybercardex.collection.v1';
 const WISHLIST_KEY = 'cybercardex.wishlist.v1';
 
-export type NewCollectionItem = Omit<CollectionItem, 'id' | 'createdAt'>;
+type NewCollectionItem = Omit<CollectionItem, 'id' | 'createdAt'>;
 
 export type ImportMode = 'merge' | 'replace';
 
@@ -55,12 +62,12 @@ const CollectionContext = createContext<CollectionContextValue | undefined>(unde
 
 const EMPTY: CollectionItem[] = [];
 
-/** Lit une liste ; si des entrées sont rejetées, la version brute est d'abord mise de côté. */
+/** Lit une liste ; si le nettoyage change quoi que ce soit, la version brute est mise de côté. */
 function loadList<T>(key: string, sanitize: (raw: unknown) => T[]) {
   const raw = readJson<unknown>(key);
   const list = sanitize(raw);
-  if (raw !== undefined && (!Array.isArray(raw) || list.length !== raw.length)) {
-    backupRaw(key, 'en partie invalide');
+  if (wasNormalized(raw, list)) {
+    backupRaw(key, 'corrigée à la lecture');
   }
   return list;
 }

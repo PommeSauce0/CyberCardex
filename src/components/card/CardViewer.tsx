@@ -11,6 +11,7 @@ import { getFinishLabel } from '../../data/labels';
 import type { Card, Printing } from '../../data/types';
 import { useT } from '../../i18n/useT';
 import { useBackHandler } from '../../native/backButton';
+import { useFocusTrap } from '../useFocusTrap';
 
 /*
  * Visionneuse plein écran : tilt 3D + reflet (souris / doigt), zoom molette,
@@ -86,6 +87,8 @@ export default function CardViewer({ card, printing, onClose }: CardViewerProps)
 
   const stageRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrap(dialogRef);
   const pointersRef = useRef(new Map<number, ViewerPoint>());
   const gestureRef = useRef<ViewerGestureState>(createGestureState());
   const zoomRef = useRef(1);
@@ -95,7 +98,8 @@ export default function CardViewer({ card, printing, onClose }: CardViewerProps)
   const cardAlt = card.subtitle ? `${card.name}: ${card.subtitle}` : card.name;
   const finishLabel = getFinishLabel(printing.finish);
 
-  // Bloque le scroll de la page, Échap pour fermer, focus sur le bouton fermer.
+  // Bloque le scroll de la page, Échap pour fermer, focus sur le bouton fermer
+  // (useFocusTrap garde ensuite le focus dans la visionneuse et le rend à la fermeture).
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -394,6 +398,7 @@ export default function CardViewer({ card, printing, onClose }: CardViewerProps)
 
   return (
     <div
+      ref={dialogRef}
       className="card-viewer"
       role="dialog"
       aria-modal="true"

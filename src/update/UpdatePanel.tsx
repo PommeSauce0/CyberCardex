@@ -1,18 +1,21 @@
+import { Link, useLocation } from 'react-router-dom';
+
 import { useT } from '../i18n/useT';
+import { useSettings } from '../settings/SettingsContext';
 import {
   checkForUpdate,
-  dismissUpdate,
   installUpdate,
   updatesEnabled,
   useUpdateState,
   type UpdateState,
 } from './updater';
+import { releaseNotes } from './versions';
 
 import './update.css';
 
 const toMb = (bytes: number) => Math.max(1, Math.round(bytes / 1e6));
 
-/** Ligne d'état + bouton d'action, commune au bandeau et aux réglages. */
+/** Ligne d'état + bouton d'action des réglages. */
 function UpdateProgress({ state }: { state: UpdateState }) {
   const t = useT();
   const { status, release, percent = -1, error } = state;
@@ -67,71 +70,73 @@ function UpdateProgress({ state }: { state: UpdateState }) {
   return null;
 }
 
-/** Bandeau en haut de l'app quand une nouvelle version est disponible. */
+/**
+ * Banderole « ruban NCPD » en haut de l'app quand une nouvelle version existe. Le bouton
+ * mène à la section Application des réglages, qui gère téléchargement et installation.
+ */
 export function UpdateBanner() {
   const t = useT();
-  const state = useUpdateState();
-  const { status, release, dismissed } = state;
+  const { release } = useUpdateState();
+  const { pathname } = useLocation();
 
-  const visible =
-    release &&
-    ['available', 'needsPermission', 'downloading', 'installing', 'error'].includes(status) &&
-    !(status === 'available' && dismissed);
-  if (!updatesEnabled || !visible) {
+  if (!updatesEnabled || !release || pathname === '/settings') {
     return null;
   }
 
   return (
     <aside className="update-banner" aria-label={t.update.title}>
-      <div className="update-banner-text">
-        <strong>{t.update.available(release.version)}</strong>
-        {release.notes && <p>{release.notes.split('\n')[0]}</p>}
-      </div>
-      <div className="update-banner-actions">
-        <UpdateProgress state={state} />
-        {status === 'available' && (
-          <button type="button" className="btn" onClick={dismissUpdate}>
-            {t.update.later}
-          </button>
-        )}
-      </div>
+      <span className="update-banner-hazard" aria-hidden="true" />
+      <p className="update-banner-text">
+        {t.update.kicker} <strong>v{release.version}</strong>
+      </p>
+      <Link to="/settings#update" className="update-banner-install">
+        {t.update.install} ›
+      </Link>
     </aside>
   );
 }
 
-/** Section « Application » des réglages : version, recherche manuelle, installation. */
-export function UpdateSettings({ className }: { className: string }) {
+/** Recherche manuelle de mise à jour (page Réglages), sans titre : la page le fournit. */
+export function UpdateSettings() {
   const t = useT();
   const state = useUpdateState();
   const { status, release, error } = state;
+  const { interfaceLanguage } = useSettings();
+  const notes = release ? releaseNotes(release.notes, interfaceLanguage) : '';
 
   if (!updatesEnabled) {
     return null;
   }
 
   return (
-    <section className={className}>
-      <div className="settings-section-heading">
-        <h2>{t.update.title}</h2>
-        <p>{t.update.text}</p>
-      </div>
-
+    <>
       {release ? (
         <div className="update-found">
           <strong>{t.update.available(release.version)}</strong>
-          {release.notes && (
+          {notes && (
             <>
               <span className="update-notes-label">{t.update.notes}</span>
-              <p className="update-notes">{release.notes}</p>
+              <p className="update-notes">{notes}</p>
             </>
           )}
           <UpdateProgress state={state} />
         </div>
       ) : (
         <>
-          {status === 'upToDate' && <p className="update-note">{t.update.upToDate}</p>}
-          {status === 'error' && <p className="update-note error">{t.update.checkFailed}</p>}
-          {status === 'error' && error && <p className="update-note">{error}</p>}
+          {/* Ligne d'état toujours présente et bouton au libellé fixe : rien ne bouge pendant
+              la recherche (sinon la page saute quand on est en bas). */}
+          <p
+            className={`update-note update-status${status === 'error' ? ' error' : ''}`}
+            role="status"
+          >
+            {status === 'checking'
+              ? t.update.checking
+              : status === 'upToDate'
+                ? t.update.upToDate
+                : status === 'error'
+                  ? `${t.update.checkFailed}${error ? ` (${error})` : ''}`
+                  : ''}
+          </p>
           <div className="settings-actions">
             <button
               type="button"
@@ -139,11 +144,11 @@ export function UpdateSettings({ className }: { className: string }) {
               disabled={status === 'checking'}
               onClick={() => void checkForUpdate(true)}
             >
-              {status === 'checking' ? t.update.checking : t.update.check}
+              {t.update.check}
             </button>
           </div>
         </>
       )}
-    </section>
+    </>
   );
 }

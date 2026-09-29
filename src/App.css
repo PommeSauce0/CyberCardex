@@ -11,21 +11,46 @@
   width: min(100%, 840px);
 }
 
+/* Retour « ← Page précédente » : un bouton à coins coupés, comme les filtres. */
 .back {
+  --cut: 7px;
+  --cut-color: var(--c-border-strong);
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 26px;
+  max-width: min(100%, 360px);
+  min-height: 38px;
+  margin-bottom: 24px;
+  padding: 0 14px 0 11px;
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
   color: var(--c-cyan);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-decoration: none;
   text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 120ms ease,
+    border-color 120ms ease;
 }
 
 .back:hover {
+  --cut-color: var(--c-cyan);
+  border-color: var(--c-cyan);
   color: var(--c-yellow);
+}
+
+.back:active {
+  background: var(--c-surface-3);
+}
+
+.back-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ================= Titres ================= */
@@ -772,5 +797,69 @@ a.stat:hover strong {
     min-height: 38px;
     padding: 0 12px;
     font-size: 13px;
+  }
+}
+
+/* ---------- Interface compacte ----------
+   Boutons ~15 % plus petits sur téléphone. Réglage « Taille de l'interface » (compacte par
+   défaut) : la classe `compact-ui` est posée sur <html> par SettingsContext. */
+@media (max-width: 650px) {
+  html.compact-ui .btn {
+    --cut: 7px;
+    min-height: 38px;
+    gap: 8px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  /* Boutons de la wishlist : déjà serrés, on garde leurs marges. */
+  html.compact-ui .wishlist-actions .btn {
+    min-height: 34px;
+    padding: 0 8px;
+  }
+
+  html.compact-ui .filters button {
+    min-height: 32px;
+    padding: 0 11px;
+    font-size: 12px;
+  }
+
+  html.compact-ui .view-switch button {
+    min-height: 36px;
+    font-size: 13px;
+  }
+
+  html.compact-ui .catalog-tab {
+    min-height: 44px;
+  }
+
+  html.compact-ui .card-stepper a {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  html.compact-ui .add-card-button {
+    min-height: 42px;
+    font-size: 15px;
+  }
+
+  html.compact-ui .wish-button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  html.compact-ui .back {
+    min-height: 34px;
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+
+  html.compact-ui .binder-nav-arrow {
+    width: 38px;
+    min-height: 38px;
+  }
+
+  html.compact-ui .scan-add {
+    min-height: 48px;
   }
 }

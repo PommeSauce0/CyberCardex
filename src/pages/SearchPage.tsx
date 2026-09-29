@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useCollection } from '../collection/CollectionContext';
 import { CardGrid, CardTile } from '../components/CardTile';
-import { searchCards } from '../data/cardSearch';
+import { norm, searchCards } from '../data/cardSearch';
 import {
   compareNumbers,
   getCatalogEntries,
@@ -106,6 +106,42 @@ function searchText({ card, printing, set }: CatalogEntry) {
 /** Texte de recherche qui désigne exactement une carte (tous ses mots sont dans son nom). */
 const cardQuery = (card: Card) => (card.subtitle ? `${card.name} ${card.subtitle}` : card.name);
 
+/** Met en évidence les mots tapés dans le nom proposé (sans tenir compte des accents). */
+function Highlight({ text, query }: { text: string; query: string }) {
+  const words = norm(query)
+    .split(/\s+/)
+    .filter((word) => word.length >= 2);
+  // Repère caractère par caractère : norm garde une lettre par lettre de base, et efface
+  // espaces et ponctuation, qu'on remplace par un espace pour ne pas décaler les positions.
+  const chars = [...text];
+  const folded = chars.map((char) => norm(char) || ' ').join('');
+  if (words.length === 0 || folded.length !== chars.length) {
+    return <>{text}</>;
+  }
+  const marked = new Array<boolean>(chars.length).fill(false);
+  for (const word of words) {
+    for (let at = folded.indexOf(word); at >= 0; at = folded.indexOf(word, at + 1)) {
+      marked.fill(true, at, at + word.length);
+    }
+  }
+  const parts: { text: string; mark: boolean }[] = [];
+  chars.forEach((char, index) => {
+    const last = parts.at(-1);
+    if (last && last.mark === marked[index]) {
+      last.text += char;
+    } else {
+      parts.push({ text: char, mark: marked[index] });
+    }
+  });
+  return (
+    <>
+      {parts.map((part, index) =>
+        part.mark ? <mark key={index}>{part.text}</mark> : <span key={index}>{part.text}</span>,
+      )}
+    </>
+  );
+}
+
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -124,6 +160,8 @@ export default function SearchPage() {
   const [draft, setDraft] = useState(query);
   // Autocomplétion : noms de cartes proposés pendant la saisie.
   const [suggestOpen, setSuggestOpen] = useState(false);
+  /** Suggestion mise en avant au clavier (flèches), -1 = aucune. */
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestions = useMemo(
     () =>
@@ -132,6 +170,43 @@ export default function SearchPage() {
         : [],
     [draft],
   );
+  const showSuggestions = suggestOpen && suggestions.length > 0;
+
+  function chooseSuggestion(card: Card) {
+    setDraft(cardQuery(card));
+    update({ q: cardQuery(card) });
+    setSuggestOpen(false);
+    setActiveSuggestion(-1);
+    inputRef.current?.blur();
+  }
+
+  function onSuggestKey(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Escape') {
+      setSuggestOpen(false);
+      setActiveSuggestion(-1);
+      return;
+    }
+    if (!showSuggestions) {
+      if (event.key === 'ArrowDown' && suggestions.length > 0) {
+        setSuggestOpen(true);
+      }
+      return;
+    }
+    const count = suggestions.length;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const step = event.key === 'ArrowDown' ? 1 : -1;
+      // De -1 (le champ) à la dernière option, en boucle.
+      setActiveSuggestion((current) => {
+        const next = current + step;
+        return next >= count ? -1 : next < -1 ? count - 1 : next;
+      });
+    } else if (event.key === 'Enter' && activeSuggestion >= 0) {
+      event.preventDefault();
+      chooseSuggestion(suggestions[activeSuggestion]);
+    }
+  }
+
   const colors = params.get('color')?.split(',').filter(Boolean) ?? [];
   const types = params.get('type')?.split(',').filter(Boolean) ?? [];
   const costs = params.get('cost')?.split(',').filter(Boolean) ?? [];
@@ -256,45 +331,68 @@ export default function SearchPage() {
           value={draft}
           autoComplete="off"
           role="combobox"
-          aria-expanded={suggestOpen && suggestions.length > 0}
+          aria-autocomplete="list"
+          aria-expanded={showSuggestions}
           aria-controls="search-suggestions"
+          aria-activedescendant={
+            showSuggestions && activeSuggestion >= 0
+              ? `suggestion-${suggestions[activeSuggestion].id}`
+              : undefined
+          }
           onChange={(event) => {
             setDraft(event.target.value);
             update({ q: event.target.value });
             setSuggestOpen(true);
+            setActiveSuggestion(-1);
           }}
           onFocus={() => setSuggestOpen(true)}
-          onBlur={() => setSuggestOpen(false)}
-          onKeyDown={(event) => event.key === 'Escape' && setSuggestOpen(false)}
+          onBlur={() => {
+            setSuggestOpen(false);
+            setActiveSuggestion(-1);
+          }}
+          onKeyDown={onSuggestKey}
         />
-        {suggestOpen && suggestions.length > 0 && (
+        {showSuggestions && (
+          // Modèle ARIA combobox : le focus reste dans le champ, les flèches parcourent
+          // les options, Entrée choisit, Échap ferme.
           <ul id="search-suggestions" className="search-suggestions" role="listbox">
-            {suggestions.map((card) => {
+            {suggestions.map((card, index) => {
               const printing = getPrintingsByCard(card.id)[0];
               return (
-                <li key={card.id} role="option" aria-selected={false}>
-                  <button
-                    type="button"
-                    // Avant la perte du focus du champ, qui fermerait la liste.
-                    onPointerDown={(event) => event.preventDefault()}
-                    onClick={() => {
-                      setDraft(cardQuery(card));
-                      update({ q: cardQuery(card) });
-                      setSuggestOpen(false);
-                      inputRef.current?.blur();
-                    }}
-                  >
+                <li
+                  key={card.id}
+                  id={`suggestion-${card.id}`}
+                  role="option"
+                  aria-selected={index === activeSuggestion}
+                  className={index === activeSuggestion ? 'active' : undefined}
+                  // Avant la perte du focus du champ, qui fermerait la liste.
+                  onPointerDown={(event) => event.preventDefault()}
+                  onClick={() => chooseSuggestion(card)}
+                >
+                  <span className="suggestion-thumb">
                     {printing && (
                       <img
                         src={getThumbUrl(getPrintingInLanguage(printing, preferredCardLanguage))}
                         alt=""
                       />
                     )}
-                    <span>
-                      <strong>{card.name}</strong>
-                      {card.subtitle && <small>{card.subtitle}</small>}
-                    </span>
-                  </button>
+                  </span>
+                  <span className="suggestion-text">
+                    <strong>
+                      <Highlight text={card.name} query={draft} />
+                    </strong>
+                    {card.subtitle && (
+                      <small>
+                        <Highlight text={card.subtitle} query={draft} />
+                      </small>
+                    )}
+                  </span>
+                  <span className="suggestion-meta">
+                    {card.color && (
+                      <i className="color-dot" style={{ background: COLOR_HEX[card.color] }} />
+                    )}
+                    {card.cardType && t.cardTypes[card.cardType]}
+                  </span>
                 </li>
               );
             })}
@@ -429,7 +527,15 @@ export default function SearchPage() {
           </label>
 
           {(activeFilterCount > 0 || query) && (
-            <button type="button" className="btn" onClick={() => setParams({}, { replace: true })}>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                // Le champ a sa propre valeur (draft) : on la vide aussi.
+                setDraft('');
+                setParams({}, { replace: true });
+              }}
+            >
               {t.search.reset}
             </button>
           )}
@@ -453,7 +559,7 @@ export default function SearchPage() {
 
       {results.length > 0 ? (
         <>
-          <CardGrid>
+          <CardGrid browse={results.map((entry) => entry.printing.id)}>
             {results.slice(0, visibleCount).map(({ card, printing, set }) => (
               <CardTile
                 key={printing.id}

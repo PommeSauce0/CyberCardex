@@ -76,8 +76,9 @@ async function writeJson(file, data) {
 }
 
 /**
- * Écrit plusieurs fichiers « tout ou rien » : chacun d'abord dans un .tmp, puis tous renommés.
- * Une erreur pendant la préparation laisse les anciens fichiers intacts.
+ * Écrit plusieurs fichiers : chacun d'abord dans un .tmp, puis tous renommés. Une erreur pendant
+ * la préparation laisse les anciens fichiers intacts ; les renommages, eux, se font un par un (pas
+ * une vraie transaction : en cas d'échec entre deux, relancer la synchro).
  */
 async function writeJsonFiles(entries) {
   for (const [file, data] of entries) {
@@ -389,6 +390,14 @@ const errors = [];
 for (const failure of report.imageFailures) {
   errors.push(`image non téléchargée : ${failure}`);
 }
+// Même contrôle avec --no-images : chaque impression écrite doit avoir son image sur le disque.
+if (apply) {
+  for (const printing of nextPrintings) {
+    if (!existsSync(path.resolve('public', printing.imageUrl.replace(/^\//, '')))) {
+      errors.push(`image absente : ${printing.imageUrl} (relancer sans --no-images)`);
+    }
+  }
+}
 
 function checkUnique(list, name) {
   const seen = new Set();
@@ -481,7 +490,19 @@ if (!overridesExisted) {
 }
 console.log('✓ src/data/cards.json, sets.json, printings.json écrits.');
 
-// Miniatures + empreintes du scanner (à refaire dès que des images changent).
+// Miniatures + empreintes du scanner (à refaire dès que des images changent). Un échec fait
+// échouer la synchro : une image manquerait dans l'app ou dans le scanner.
 const thumbs = await buildThumbnails();
-console.log(`✓ public/thumbs : ${thumbs.built} miniature(s) générée(s), ${thumbs.failed} échec(s)`);
-console.log(`✓ public/scan-index.json : ${await buildScanIndex()} empreintes`);
+const scan = await buildScanIndex();
+console.log(
+  `${thumbs.failed ? '✗' : '✓'} public/thumbs : ${thumbs.built} miniature(s) générée(s), ${thumbs.failed} échec(s)`,
+);
+console.log(`${scan.failed.length ? '✗' : '✓'} public/scan-index.json : ${scan.count} empreintes`);
+if (thumbs.failed || scan.failed.length) {
+  console.error(
+    '\n✗ Synchro incomplète : les données sont écrites, mais des fichiers dérivés manquent.',
+  );
+  scan.failed.forEach((line) => console.error(`  Scanner : ${line}`));
+  console.error('  Corrige les images concernées puis relance `npm run sync-catalog -- --apply`.');
+  process.exit(1);
+}

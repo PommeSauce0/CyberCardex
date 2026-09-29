@@ -9,6 +9,7 @@
   --c-cyan: #00f0ff;
   --c-cyan-dim: rgba(0, 240, 255, 0.12);
   --c-red: #ff003c;
+  --c-green: #00ff9c;
   --c-magenta: #ff2bd6;
   --c-danger: #ff5c7a;
 
@@ -176,8 +177,9 @@ textarea {
 .owned-summary,
 .collection-form,
 .owned-item,
-.settings-section,
-.language-option,
+.search-suggestions,
+.settings-card,
+.back,
 .import-preview,
 .empty-state,
 .card-viewer-toolbar,
@@ -219,10 +221,12 @@ textarea {
 .collection-form::after,
 .owned-item::before,
 .owned-item::after,
-.settings-section::before,
-.settings-section::after,
-.language-option::before,
-.language-option::after,
+.search-suggestions::before,
+.settings-card::before,
+.search-suggestions::after,
+.settings-card::after,
+.back::before,
+.back::after,
 .import-preview::before,
 .import-preview::after,
 .empty-state::before,
@@ -258,8 +262,9 @@ textarea {
 .detail-panel::before,
 .collection-form::before,
 .owned-item::before,
-.settings-section::before,
-.language-option::before,
+.search-suggestions::before,
+.settings-card::before,
+.back::before,
 .import-preview::before,
 .empty-state::before,
 .card-viewer-toolbar::before,
@@ -283,8 +288,9 @@ textarea {
 .detail-panel::after,
 .collection-form::after,
 .owned-item::after,
-.settings-section::after,
-.language-option::after,
+.search-suggestions::after,
+.settings-card::after,
+.back::after,
 .import-preview::after,
 .empty-state::after,
 .card-viewer-toolbar::after,

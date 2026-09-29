@@ -1,0 +1,8 @@
+# Mises à jour des actions GitHub épinglées par SHA (.github/workflows) : Dependabot ouvre
+# une pull request par nouvelle version, à relire et fusionner à la main.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

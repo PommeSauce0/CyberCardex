@@ -1,0 +1,329 @@
+/* Confirmation en deux temps : alerte, hachures, titre en glitch, balayage.
+   Rouge (danger) pour vider, vert (safe) pour remplacer par une sauvegarde. */
+
+.confirm-backdrop,
+.confirm-dialog {
+  --tone: var(--c-red);
+  --tone-soft: #ff8098;
+  --tone-deep: #c4002e;
+  --tone-bg: #1a070c;
+  --tone-hold: #22060d;
+  --tone-rgb: 255, 0, 60;
+}
+
+.confirm-backdrop.safe,
+.confirm-dialog.safe {
+  --tone: var(--c-green);
+  --tone-soft: #7dffc4;
+  --tone-deep: #00b36e;
+  --tone-bg: #061a12;
+  --tone-hold: #04200f;
+  --tone-rgb: 0, 255, 156;
+}
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background:
+    repeating-linear-gradient(to bottom, rgba(var(--tone-rgb), 0.05) 0 2px, transparent 2px 4px),
+    rgba(4, 6, 6, 0.86);
+  animation: confirm-fade 180ms ease-out;
+}
+
+.confirm-dialog {
+  --cut: 16px;
+  --cut-color: var(--tone);
+  position: relative;
+  display: grid;
+  gap: 14px;
+  width: min(100%, 460px);
+  padding: 0 20px 20px;
+  overflow: hidden;
+  border: 1px solid var(--tone);
+  background: linear-gradient(180deg, var(--tone-bg), var(--c-bg) 55%);
+  box-shadow:
+    0 0 32px rgba(var(--tone-rgb), 0.25),
+    0 24px 60px rgba(0, 0, 0, 0.7);
+  animation: confirm-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.confirm-hazard {
+  height: 10px;
+  margin: 0 -20px;
+  background: repeating-linear-gradient(-45deg, var(--tone) 0 10px, var(--c-ink) 10px 20px);
+}
+
+.confirm-kicker {
+  margin: 4px 0 0;
+  color: var(--tone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  animation: confirm-flicker 2.8s steps(1) infinite;
+}
+
+.confirm-dialog h2 {
+  margin: -6px 0 0;
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.05;
+  text-shadow:
+    -2px 0 rgba(var(--tone-rgb), 0.8),
+    2px 0 rgba(0, 240, 255, 0.5);
+  text-transform: uppercase;
+  animation: glitch-in 520ms steps(1, end) both;
+}
+
+.confirm-text p {
+  margin: 0;
+  color: var(--c-text-soft);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.confirm-text p + p {
+  margin-top: 6px;
+  color: var(--c-muted-2);
+  font-size: 13px;
+}
+
+.confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.confirm-actions .btn {
+  flex: 1 1 auto;
+}
+
+/* « Continuer » à la couleur de l'action */
+.confirm-dialog .confirm-next {
+  --cut-color: rgba(var(--tone-rgb), 0.45);
+  border-color: rgba(var(--tone-rgb), 0.45);
+  color: var(--tone-soft);
+}
+
+.confirm-dialog .confirm-next:hover {
+  --cut-color: var(--tone);
+  border-color: var(--tone);
+  background: rgba(var(--tone-rgb), 0.1);
+}
+
+/* Bouton à maintenir : la jauge se remplit pendant l'appui. */
+.confirm-hold {
+  --cut: 10px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 56px;
+  overflow: hidden;
+  border: 1px solid var(--tone);
+  background: var(--tone-hold);
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut))
+  );
+}
+
+.confirm-hold-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: repeating-linear-gradient(-45deg, var(--tone) 0 10px, var(--tone-deep) 10px 20px);
+  transition: width 180ms ease-out;
+}
+
+.confirm-hold.holding .confirm-hold-fill {
+  width: 100%;
+  transition: width var(--hold) linear;
+}
+
+.confirm-hold-label {
+  position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.confirm-cancel {
+  justify-self: center;
+  min-width: 50%;
+}
+
+@keyframes confirm-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes confirm-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes confirm-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---------- Cyberpsychose : pendant l'appui sur « Maintenir pour effacer » ----------
+   --psycho monte de 0 à 1 sur la durée de l'appui : secousses, franges rouge / cyan,
+   clignotement et halo rouge de plus en plus forts. Tout s'arrête si on relâche. */
+
+@property --psycho {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+/* Les animations d'ouverture restent dans la liste : sinon elles se rejoueraient (flash)
+   quand l'effet s'arrête. */
+.confirm-backdrop.psycho {
+  animation:
+    confirm-fade 180ms ease-out,
+    psycho-ramp var(--hold) linear forwards,
+    psycho-flicker 160ms steps(2, end) infinite;
+}
+
+.confirm-backdrop.psycho::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: '';
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 0, 60, 0.12) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 30%, rgba(255, 0, 60, 0.55) 100%);
+  opacity: var(--psycho);
+}
+
+.confirm-backdrop.psycho .confirm-dialog {
+  z-index: 1;
+  box-shadow:
+    calc(var(--psycho) * -9px) 0 0 rgba(255, 0, 60, 0.65),
+    calc(var(--psycho) * 9px) 0 0 rgba(0, 240, 255, 0.45),
+    0 0 calc(32px + var(--psycho) * 70px) rgba(255, 0, 60, calc(0.25 + var(--psycho) * 0.45));
+  animation:
+    confirm-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    psycho-shake 90ms steps(1, end) infinite;
+}
+
+.confirm-backdrop.psycho .confirm-dialog h2 {
+  text-shadow:
+    calc(-2px - var(--psycho) * 5px) 0 rgba(255, 0, 60, 0.9),
+    calc(2px + var(--psycho) * 5px) 0 rgba(0, 240, 255, 0.7);
+}
+
+/* Avertissement géant derrière la fenêtre */
+.psycho-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(24px, env(safe-area-inset-top)) 16px 24px;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--c-red);
+  text-align: center;
+  opacity: calc(0.25 + var(--psycho) * 0.75);
+}
+
+.psycho-overlay strong {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 11vw, 72px);
+  font-weight: 700;
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-shadow: 0 0 24px rgba(255, 0, 60, 0.7);
+  animation: psycho-glitch 240ms steps(1, end) infinite;
+}
+
+.psycho-overlay span {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: confirm-flicker 700ms steps(1) infinite;
+}
+
+@keyframes psycho-ramp {
+  to {
+    --psycho: 1;
+  }
+}
+
+@keyframes psycho-flicker {
+  50% {
+    filter: brightness(calc(1 + var(--psycho) * 0.6)) contrast(calc(1 + var(--psycho) * 0.4));
+  }
+}
+
+@keyframes psycho-shake {
+  0% {
+    transform: translate(calc(var(--psycho) * -7px), calc(var(--psycho) * 3px));
+  }
+  25% {
+    transform: translate(calc(var(--psycho) * 6px), calc(var(--psycho) * -4px))
+      skewX(calc(var(--psycho) * 2deg));
+  }
+  50% {
+    transform: translate(calc(var(--psycho) * -4px), calc(var(--psycho) * -5px));
+  }
+  75% {
+    transform: translate(calc(var(--psycho) * 5px), calc(var(--psycho) * 4px))
+      skewX(calc(var(--psycho) * -2deg));
+  }
+}
+
+@keyframes psycho-glitch {
+  0% {
+    clip-path: inset(0 0 55% 0);
+    transform: translateX(-6px);
+  }
+  25% {
+    clip-path: inset(40% 0 0 0);
+    transform: translateX(8px);
+  }
+  50% {
+    clip-path: inset(0);
+    transform: none;
+  }
+  75% {
+    clip-path: inset(20% 0 30% 0);
+    transform: translateX(-3px) skewX(-10deg);
+  }
+}

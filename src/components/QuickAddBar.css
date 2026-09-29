@@ -10,14 +10,67 @@
   padding: 12px 14px 12px 18px;
   border: 1px solid var(--c-yellow);
   background: #06070a;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.6),
-    0 12px 40px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(252, 238, 10, 0.15);
-  transform: translateX(-50%);
+  --bar-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6), 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(252, 238, 10, 0.15);
+  box-shadow: var(--bar-shadow);
+  /* translate (et non transform) : l'animation d'entrée n'écrase pas le centrage. */
+  translate: -50% 0;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  animation: page-in 200ms ease-out;
+  /* steps : le signal « saute » d'une image à l'autre au lieu de glisser. */
+  animation: quick-glitch-in 420ms steps(1, end);
+}
+
+/* Apparition en glitch : tranches, secousses, dédoublement rouge / cyan (la découpe déborde
+   de 10 px sur les côtés pour laisser voir ce dédoublement). */
+@keyframes quick-glitch-in {
+  0% {
+    opacity: 0;
+    clip-path: inset(46% -10px 46% -10px);
+    transform: translateX(-14px) skewX(14deg);
+  }
+  12% {
+    opacity: 1;
+    clip-path: inset(0 -10px 68% -10px);
+    transform: translateX(10px);
+    box-shadow:
+      -5px 0 0 var(--c-red),
+      5px 0 0 var(--c-cyan);
+  }
+  24% {
+    clip-path: inset(62% -10px 4% -10px);
+    transform: translateX(-8px) skewX(-8deg);
+  }
+  36% {
+    clip-path: inset(18% -10px 38% -10px);
+    transform: translateX(6px);
+    box-shadow:
+      4px 0 0 var(--c-red),
+      -4px 0 0 var(--c-cyan);
+  }
+  48% {
+    opacity: 0.4;
+    clip-path: inset(0);
+    transform: none;
+  }
+  60% {
+    opacity: 1;
+    clip-path: inset(0 -10px 12% -10px);
+    transform: translateX(-3px);
+    box-shadow:
+      -2px 0 0 var(--c-red),
+      2px 0 0 var(--c-cyan);
+  }
+  76% {
+    clip-path: inset(0);
+    transform: translateX(2px);
+  }
+  88%,
+  100% {
+    clip-path: inset(0);
+    transform: none;
+    box-shadow: var(--bar-shadow);
+  }
 }
 
 .quick-add-status {
@@ -93,24 +146,12 @@
   font-weight: 600;
 }
 
-.quick-add-bar.inline {
-  position: static;
-  width: 100%;
-  margin-bottom: 22px;
-  box-shadow: none;
-  transform: none;
-}
-
 /* Laisse la place à la barre en bas de page */
 .has-quick-add {
   padding-bottom: 130px;
 }
 
 @media (max-width: 760px) {
-  .quick-add-bar.inline {
-    bottom: auto;
-  }
-
   .quick-add-bar {
     bottom: calc(var(--nav-height) + 8px);
     flex-direction: column;

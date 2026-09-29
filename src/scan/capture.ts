@@ -81,27 +81,40 @@ export function captureFromVideoScales(
   });
 }
 
+/** Position de la photo sous le cadre : centre (px de la visée), échelle et angle (radians). */
+export type ImageView = { cx: number; cy: number; scale: number; angle: number };
+
 /**
- * Photo importée : on ne sait pas où est la carte. On renvoie deux hypothèses —
- * carte qui remplit la photo, ou carte plus petite au centre — et on gardera la meilleure.
+ * Photo recadrée (et éventuellement tournée) à la main : on redessine la zone du cadre telle
+ * qu'on la voit à l'écran. Comme pour la caméra, on ajoute la marge et on essaie quelques
+ * échelles autour du cadre.
  */
-export function captureFromImage(image: HTMLImageElement): Pixels[] {
-  const { naturalWidth: width, naturalHeight: height } = image;
-  // Plus grand rectangle aux proportions d'une carte, centré dans la photo.
-  const fitWidth = Math.min(width, height * CARD_RATIO);
-  const cx = width / 2;
-  const cy = height / 2;
+export function captureFromImageView(
+  image: HTMLImageElement,
+  view: ImageView,
+  frame: { left: number; top: number; width: number; height: number },
+  scales = [1, 0.92, 1.08],
+): Pixels[] {
+  return scales.map((scale) => {
+    const width = frame.width * scale * (1 + 2 * CAPTURE_MARGIN);
+    const left = frame.left + frame.width / 2 - width / 2;
+    const top = frame.top + frame.height / 2 - width / CARD_RATIO / 2;
 
-  const hypotheses = [
-    // La carte remplit le cadre : le rectangle = le guide, on ajoute la marge autour.
-    fitWidth * (1 + 2 * CAPTURE_MARGIN),
-    // La carte occupe ~70 % de la photo : le rectangle = guide + marge.
-    fitWidth * 0.95,
-  ];
+    const context = getContext();
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.fillStyle = '#000';
+    context.fillRect(0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT);
+    // Visée → image de travail, puis la même transformation que la photo à l'écran.
+    const ratio = CAPTURE_WIDTH / width;
+    context.setTransform(ratio, 0, 0, ratio, -left * ratio, -top * ratio);
+    context.translate(view.cx, view.cy);
+    context.rotate(view.angle);
+    context.scale(view.scale, view.scale);
+    context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+    context.setTransform(1, 0, 0, 1, 0, 0);
 
-  return hypotheses.map((regionWidth) => {
-    const regionHeight = regionWidth / CARD_RATIO;
-    return grab(image, cx - regionWidth / 2, cy - regionHeight / 2, regionWidth, regionHeight);
+    const { data } = context.getImageData(0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT);
+    return { data, width: CAPTURE_WIDTH, height: CAPTURE_HEIGHT, channels: 4 };
   });
 }
 

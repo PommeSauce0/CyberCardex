@@ -26,7 +26,6 @@ dist-ssr
 # CyberCardex : fichiers lourds ou générés
 public/cards/
 public/thumbs/
-backups/
 tmp/
 
 # Clé de signature de l'app et variables secrètes

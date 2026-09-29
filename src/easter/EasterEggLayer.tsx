@@ -8,6 +8,7 @@ import { useT } from '../i18n/useT';
 import EdgerunnersScene from './EdgerunnersScene';
 import {
   EDGERUNNERS,
+  easterEggsQuiet,
   onBraindance,
   onBraindanceMode,
   onCardAdded,
@@ -19,7 +20,7 @@ import {
 
 import './easter.css';
 
-const BRAINDANCE_MODE_SECONDS = 30;
+const BRAINDANCE_MODE_SECONDS = 10;
 
 type Toast = EasterToast & { id: number };
 
@@ -63,20 +64,6 @@ export default function EasterEggLayer() {
     [],
   );
 
-  // Série complétée pendant la visite → Braindance (pas au démarrage de l'app).
-  const completed = useCompletedSets();
-  const previousCompleted = useRef<string[] | null>(null);
-  useEffect(() => {
-    const previous = previousCompleted.current;
-    previousCompleted.current = completed;
-    const newlyCompleted = previous && completed.find((id) => !previous.includes(id));
-    if (newlyCompleted) {
-      setBraindanceSet(newlyCompleted);
-    }
-  }, [completed]);
-
-  useEffect(() => onBraindance(setBraindanceSet), []);
-
   // Edgerunners : dès qu'on possède les deux promos, Adam tombe sur Rebecca.
   const { countVariant } = useCollection();
   const ownsPromo = (printingId: string) => {
@@ -85,20 +72,60 @@ export default function EasterEggLayer() {
   };
   const edgerunners = ownsPromo(EDGERUNNERS.rebecca) && ownsPromo(EDGERUNNERS.adam);
   const [sceneOn, setSceneOn] = useState(false);
+  const sceneOnRef = useRef(false);
   const previousEdgerunners = useRef<boolean | null>(null);
+  /** Braindance en attente de la fin de la scène Edgerunners (les deux ne se chevauchent pas). */
+  const queuedBraindance = useRef<string | undefined>(undefined);
+
+  // Série complétée pendant la visite → Braindance (pas au démarrage de l'app).
+  // Cet effet passe avant celui d'Edgerunners : previousEdgerunners a encore l'ancienne valeur,
+  // ce qui permet de voir si la scène démarre avec le même ajout (Set 1 Promos fini par Adam
+  // ou Rebecca). Dans ce cas, ou si la scène joue déjà, le Braindance passe après elle.
+  const completed = useCompletedSets();
+  const previousCompleted = useRef<string[] | null>(null);
+  useEffect(() => {
+    const previous = previousCompleted.current;
+    previousCompleted.current = completed;
+    if (easterEggsQuiet()) {
+      return;
+    }
+    const newlyCompleted = previous && completed.find((id) => !previous.includes(id));
+    if (!newlyCompleted) {
+      return;
+    }
+    const sceneStarting = previousEdgerunners.current === false && edgerunners;
+    if (sceneStarting || sceneOnRef.current) {
+      queuedBraindance.current = newlyCompleted;
+    } else {
+      setBraindanceSet(newlyCompleted);
+    }
+  }, [completed, edgerunners]);
+
+  useEffect(() => onBraindance(setBraindanceSet), []);
+
+  useEffect(() => {
+    sceneOnRef.current = sceneOn;
+  }, [sceneOn]);
+
   useEffect(() => {
     const previous = previousEdgerunners.current;
     previousEdgerunners.current = edgerunners;
-    if (previous === false && edgerunners) {
+    if (previous === false && edgerunners && !easterEggsQuiet()) {
       // Juste après l'ajout, le temps que le bouton réagisse.
       const timer = window.setTimeout(() => setSceneOn(true), 500);
       return () => window.clearTimeout(timer);
     }
   }, [edgerunners]);
   useEffect(() => onEdgerunners(() => setSceneOn(true)), []);
-  const closeScene = useCallback(() => setSceneOn(false), []);
+  const closeScene = useCallback(() => {
+    setSceneOn(false);
+    if (queuedBraindance.current) {
+      setBraindanceSet(queuedBraindance.current);
+      queuedBraindance.current = undefined;
+    }
+  }, []);
 
-  // Mode Braindance : filtre rouge + balayage renforcé, 30 s.
+  // Mode Braindance : filtre rouge + balayage renforcé, 10 s.
   useEffect(
     () =>
       onBraindanceMode(() => {

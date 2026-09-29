@@ -299,7 +299,7 @@ export default function CollectionPage() {
         </div>
 
         {visibleRows.length > 0 ? (
-          <CardGrid>
+          <CardGrid browse={visibleRows.map((row) => row.printing.id)}>
             {visibleRows.map(({ card, set, printing, quantity }) => (
               <CardTile
                 key={printing.id}

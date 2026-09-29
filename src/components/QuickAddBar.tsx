@@ -11,25 +11,17 @@ const LANGUAGES: CardLanguage[] = ['EN', 'FR'];
 
 type QuickAddBarProps = {
   quickAdd: QuickAdd;
-  onClose?: () => void;
-  /** Texte d'aide affiché tant que rien n'a été ajouté. */
-  hint?: string;
-  /** Intégrée dans la page au lieu d'être fixée en bas de l'écran. */
-  inline?: boolean;
+  onClose: () => void;
 };
 
 /** Barre fixe en bas d'écran : réglages de l'ajout rapide + compteur + annuler. */
-export default function QuickAddBar({ quickAdd, onClose, hint, inline = false }: QuickAddBarProps) {
+export default function QuickAddBar({ quickAdd, onClose }: QuickAddBarProps) {
   const t = useT();
   const { condition, setCondition, language, setLanguage, count, last, undo } = quickAdd;
   const lastCard = last ? getCardById(last.cardId) : undefined;
 
   return (
-    <div
-      className={inline ? 'quick-add-bar inline' : 'quick-add-bar'}
-      role="region"
-      aria-label={t.quickAdd.title}
-    >
+    <div className="quick-add-bar" role="region" aria-label={t.quickAdd.title}>
       <div className="quick-add-status" aria-live="polite">
         <strong>
           <BoltIcon /> {t.quickAdd.title}
@@ -38,7 +30,7 @@ export default function QuickAddBar({ quickAdd, onClose, hint, inline = false }:
         <small>
           {lastCard && last
             ? t.quickAdd.last(`${lastCard.name} #${last.number} ${last.language}`)
-            : (hint ?? t.quickAdd.hint)}
+            : t.quickAdd.hint}
         </small>
       </div>
 
@@ -77,11 +69,9 @@ export default function QuickAddBar({ quickAdd, onClose, hint, inline = false }:
         <button type="button" className="btn" disabled={count === 0} onClick={undo}>
           {t.quickAdd.undo}
         </button>
-        {onClose && (
-          <button type="button" className="btn btn-primary" onClick={onClose}>
-            {t.quickAdd.done}
-          </button>
-        )}
+        <button type="button" className="btn btn-primary" onClick={onClose}>
+          {t.quickAdd.done}
+        </button>
       </div>
     </div>
   );

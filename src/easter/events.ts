@@ -26,6 +26,17 @@ function listen<T>(name: string, handler: (detail: T) => void) {
 const emit = <T>(name: string, detail: T) =>
   window.dispatchEvent(new CustomEvent(name, { detail }));
 
+/*
+ * Import de sauvegarde : des dizaines de cartes arrivent d'un coup. Les easter eggs liés à la
+ * collection (série complète, Edgerunners) ne doivent pas se déclencher pour autant : l'import
+ * les met en silence le temps que la collection se mette à jour.
+ */
+let quietUntil = 0;
+export const quietEasterEggs = (ms = 1500) => {
+  quietUntil = Date.now() + ms;
+};
+export const easterEggsQuiet = () => Date.now() < quietUntil;
+
 export const showToast = (toast: EasterToast) => emit(TOAST, toast);
 export const onToast = (handler: (toast: EasterToast) => void) => listen(TOAST, handler);
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import { useCollection } from '../collection/CollectionContext';
 import { useQuickAdd } from '../collection/useQuickAdd';
@@ -11,6 +11,7 @@ import { getCardById, getPreferredPrintingsBySet, getSetById } from '../data/cat
 import { getCatalogTab, percent, plural } from '../data/labels';
 import { playBraindance } from '../easter/events';
 import { useT } from '../i18n/useT';
+import BackLink from '../navigation/BackLink';
 import { CARD_SIZES, useSettings } from '../settings/SettingsContext';
 
 import './SetPage.css';
@@ -68,9 +69,7 @@ export default function SetPage() {
   if (!set) {
     return (
       <main className="page">
-        <Link className="back" to="/">
-          ← {t.nav.home}
-        </Link>
+        <BackLink fallbackTo="/" fallbackLabel={t.nav.home} />
         <div className="empty-state">
           <strong>{t.set.notFoundTitle}</strong>
           <p>{t.set.notFoundText}</p>
@@ -120,9 +119,10 @@ export default function SetPage() {
 
   return (
     <main className={quickMode ? 'page has-quick-add' : 'page has-quick-fab'}>
-      <Link className="back" to={backTab === 'core' ? '/' : `/?tab=${backTab}`}>
-        ← {t.nav.home}
-      </Link>
+      <BackLink
+        fallbackTo={backTab === 'core' ? '/' : `/?tab=${backTab}`}
+        fallbackLabel={t.nav.home}
+      />
 
       <header className="set-header" data-code={set.code}>
         <div className="set-header-topline">
@@ -243,7 +243,7 @@ export default function SetPage() {
           </div>
 
           {filteredRows.length > 0 ? (
-            <CardGrid>
+            <CardGrid browse={filteredRows.map((row) => row.printing.id)}>
               {filteredRows.map(({ card, printing }) => (
                 <CardTile
                   key={printing.id}

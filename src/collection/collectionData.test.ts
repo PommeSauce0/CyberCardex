@@ -88,3 +88,52 @@ describe('csvCell', () => {
     expect(csvCell('Near Mint')).toBe('Near Mint');
   });
 });
+
+describe('sauvegarde v2 : decks et réglages', () => {
+  const deck = {
+    id: 'd1',
+    name: 'Rouge',
+    cards: [{ cardId: 'v-streetkid', quantity: 1 }],
+    updatedAt: '2026-09-28T10:00:00.000Z',
+  };
+
+  it('exporte les decks et les réglages avec la collection', () => {
+    const data = buildExport([], [], [deck], { uiSize: 'normal' });
+    expect(data.version).toBe(2);
+    expect(data.decks).toEqual([deck]);
+    expect(data.settings).toEqual({ uiSize: 'normal' });
+  });
+
+  it('relit les decks (nettoyés) et les réglages', () => {
+    // Deck incomplet (sans nom ni date) et carte inconnue : nettoyés, pas rejetés.
+    const text = JSON.stringify({
+      ...buildExport([], [], [deck], { uiSize: 'normal' }),
+      decks: [deck, { id: 'd2', cards: [{ cardId: 'inconnue', quantity: 2 }] }],
+    });
+    const parsed = parseImport(text);
+    expect(parsed.decks?.map((entry) => entry.id)).toEqual(['d1', 'd2']);
+    expect(parsed.decks?.[1].cards).toEqual([]);
+    expect(parsed.settings).toEqual({ uiSize: 'normal' });
+  });
+
+  it('une sauvegarde v1 (sans decks ni réglages) reste lisible', () => {
+    const parsed = parseImport(
+      JSON.stringify({ app: 'cybercardex', version: 1, collection: [item], wishlist: [] }),
+    );
+    expect(parsed.collection).toHaveLength(1);
+    expect(parsed.decks).toBeUndefined();
+    expect(parsed.settings).toBeUndefined();
+  });
+});
+
+describe("parseImport : version de l'app", () => {
+  it("refuse une sauvegarde d'une version plus récente de l'app", () => {
+    const future = JSON.stringify({
+      app: 'cybercardex',
+      version: 99,
+      collection: [],
+      wishlist: [],
+    });
+    expect(() => parseImport(future)).toThrow(/plus récente|newer/);
+  });
+});

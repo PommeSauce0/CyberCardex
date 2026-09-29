@@ -13,6 +13,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- Fond peint derrière les barres système par Capacitor (SystemBars) : sombre comme l'app.
+             Le thème clair par défaut les rendait blanches sur Android 11 (icônes illisibles). -->
+        <item name="android:windowBackground">@color/cybercardex_background</item>
     </style>
 
 

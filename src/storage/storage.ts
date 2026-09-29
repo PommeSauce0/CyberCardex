@@ -38,6 +38,21 @@ export function backupRaw(key: string, reason: string) {
   }
 }
 
+/** JSON avec les clés triées : deux données égales donnent le même texte, quel que soit l'ordre. */
+const canonical = (value: unknown): string =>
+  JSON.stringify(value, (_key, inner: unknown) =>
+    inner && typeof inner === 'object' && !Array.isArray(inner)
+      ? Object.fromEntries(
+          Object.entries(inner as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)),
+        )
+      : inner,
+  );
+
+/** Vrai si la version nettoyée diffère de la donnée relue (entrée rejetée ou champ corrigé). */
+export function wasNormalized(raw: unknown, cleaned: unknown) {
+  return raw !== undefined && canonical(raw) !== canonical(cleaned);
+}
+
 /** Valeur absente → undefined. Valeur illisible → copie de secours, puis undefined. */
 export function readJson<T>(key: string): T | undefined {
   let stored: string | null;
@@ -57,22 +72,44 @@ export function readJson<T>(key: string): T | undefined {
   }
 }
 
+/*
+ * Écriture impossible (stockage plein, navigation privée, stockage natif en échec) : la
+ * modification reste visible pendant la session mais pourrait être perdue au prochain
+ * lancement. On prévient l'app (bandeau StorageWarning) au lieu de se taire.
+ */
+const failureListeners = new Set<() => void>();
+let writeFailed = false;
+
+/** Vrai si une écriture a échoué pendant cette session. */
+export const storageWriteFailed = () => writeFailed;
+
+export function onStorageFailure(listener: () => void) {
+  failureListeners.add(listener);
+  return () => {
+    failureListeners.delete(listener);
+  };
+}
+
+function reportWriteFailure(key: string, error: unknown) {
+  console.error(`CyberCardex : écriture de ${key} impossible`, error);
+  writeFailed = true;
+  failureListeners.forEach((listener) => listener());
+}
+
 export function writeJson(key: string, value: unknown) {
   const json = JSON.stringify(value);
   const stamp = String(Date.now());
   try {
     localStorage.setItem(key, json);
     localStorage.setItem(stampKey(key), stamp);
-  } catch {
-    // Stockage plein ou indisponible (navigation privée) : on ignore.
+  } catch (error) {
+    reportWriteFailure(key, error);
   }
   if (native && key.startsWith(PREFIX)) {
     void Promise.all([
       Preferences.set({ key, value: json }),
       Preferences.set({ key: stampKey(key), value: stamp }),
-    ]).catch(() => {
-      // Copie de sécurité seulement : localStorage reste à jour.
-    });
+    ]).catch((error: unknown) => reportWriteFailure(key, error));
   }
 }
 

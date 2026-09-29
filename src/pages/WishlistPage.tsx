@@ -5,11 +5,15 @@ import { CardGrid, CardTile } from '../components/CardTile';
 import { getCardById, getPrintingById, getSetById } from '../data/catalog';
 import { formatPrice } from '../data/labels';
 import { getCardmarketLink } from '../data/links';
+import { usePriceData } from '../data/livePrices';
 import { useT } from '../i18n/useT';
+import { useSettings } from '../settings/SettingsContext';
 
 export default function WishlistPage() {
   const { wishlist, countVariant, countCard, toggleWish } = useCollection();
   const t = useT();
+  const { cardmarket: cardmarketMode } = useSettings();
+  usePriceData();
 
   // Une ligne par impression : une ancienne entrée EN + FR de la même carte ne compte qu'une fois.
   const seen = new Set<string>();
@@ -46,7 +50,7 @@ export default function WishlistPage() {
             <h2>{t.wishlist.toFind}</h2>
             <span>{rows.length}</span>
           </div>
-          <CardGrid>
+          <CardGrid browse={rows.map((row) => row.printing.id)}>
             {rows.map(({ card, set, printing }) => {
               const cardmarket = getCardmarketLink(card, printing);
               return (
@@ -66,17 +70,21 @@ export default function WishlistPage() {
                     </p>
                   )}
                   <div className="wishlist-actions">
-                    <a
-                      className="btn wishlist-price"
-                      href={cardmarket.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {cardmarket.price !== undefined
-                        ? formatPrice(cardmarket.price)
-                        : t.wishlist.price}{' '}
-                      ↗
-                    </a>
+                    {cardmarketMode !== 'off' && (
+                      <a
+                        className="btn wishlist-price"
+                        href={cardmarket.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {cardmarketMode === 'link'
+                          ? t.wishlist.cardmarket
+                          : cardmarket.price !== undefined
+                            ? formatPrice(cardmarket.price)
+                            : t.wishlist.price}{' '}
+                        ↗
+                      </a>
+                    )}
                     <button
                       type="button"
                       className="btn wishlist-remove"

@@ -8,46 +8,247 @@
   text-transform: uppercase;
 }
 
-/* Decks enregistrés */
-.deck-saved {
+/* ---------- Liste des decks ---------- */
+
+.deck-list-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.deck-list-actions + .deck-import {
   margin-bottom: 18px;
 }
 
-.deck-saved-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.deck-empty {
+  display: grid;
+  justify-items: center;
 }
 
-.deck-saved-list button {
-  min-height: 38px;
-  padding: 0 14px;
-  border: 1px solid var(--c-border-strong);
-  background: var(--c-surface);
-  color: var(--c-text-soft);
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
+.deck-empty .deck-import {
+  width: min(100%, 520px);
+  margin-top: 16px;
+  text-align: left;
+}
+
+.deck-empty-import {
+  margin-top: 12px;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-decoration: underline;
   text-transform: uppercase;
   cursor: pointer;
 }
 
-.deck-saved-list button.active {
+.deck-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck-tile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px 10px 10px;
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--c-cyan);
+  background: var(--c-surface);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 120ms ease;
+}
+
+.deck-tile:hover,
+.deck-tile:focus-visible {
+  border-color: var(--c-yellow);
+  outline: none;
+}
+
+.deck-tile:active {
+  background: var(--c-surface-3);
+}
+
+/* Les 3 Légendes en éventail. */
+.deck-tile-legends {
+  display: flex;
+}
+
+.deck-tile-legends img,
+.deck-tile-legends i {
+  width: 38px;
+  aspect-ratio: 733 / 1024;
+  object-fit: contain;
+}
+
+.deck-tile-legends > * + * {
+  margin-left: -14px;
+}
+
+.deck-tile-legends i {
+  border: 1px dashed var(--c-border-strong);
+  background: var(--c-bg);
+}
+
+.deck-tile-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.deck-tile-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.deck-tile-head strong {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 17px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.deck-tile-head em {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-style: normal;
+}
+
+.deck-tile-head em.ok {
+  color: var(--c-yellow);
+}
+
+.deck-tile-head em.warn {
+  color: var(--c-danger);
+}
+
+.deck-tile-names {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  color: var(--c-text-soft);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.deck-tile-text small {
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.deck-tile .progress,
+.deck-tile .progress-value {
+  display: block;
+}
+
+.deck-tile .progress {
+  height: 4px;
+  margin-top: 4px;
+}
+
+/* ---------- En-tête d'un deck ---------- */
+
+.deck-header {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.deck-name-input {
+  width: 100%;
+  padding: 2px 0 6px;
+  border: 0;
+  border-bottom: 1px dashed var(--c-border-strong);
+  outline: none;
+  background: transparent;
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: clamp(26px, 6vw, 40px);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.deck-name-input:focus {
+  border-bottom-color: var(--c-cyan);
+}
+
+.deck-name-input::placeholder {
+  color: var(--c-yellow);
+  opacity: 0.55;
+}
+
+.deck-counters,
+.deck-ram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.deck-counters span,
+.deck-ram > span:not(.deck-ram-label) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.deck-counters .ok {
+  border-color: rgba(0, 240, 255, 0.4);
+  color: var(--c-cyan);
+}
+
+.deck-counters .legal {
   border-color: var(--c-yellow);
   color: var(--c-yellow);
 }
 
-.deck-saved-list .deck-new {
-  border-style: dashed;
-  color: var(--c-cyan);
+.deck-counters .warn,
+.deck-ram .warn {
+  border-color: var(--c-danger);
+  color: var(--c-danger);
 }
 
-/* Éditeur */
-.deck-editor {
-  display: grid;
-  gap: 10px;
-  margin-bottom: 26px;
+.deck-ram-label {
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
 }
+
+.deck-issues {
+  display: grid;
+  gap: 3px;
+  margin: 0 0 14px;
+  padding: 10px 14px 10px 30px;
+  border-left: 3px solid var(--c-danger);
+  background: rgba(255, 92, 122, 0.08);
+  color: var(--c-text-soft);
+  font-size: 13px;
+}
+
+/* ---------- Actions, import ---------- */
 
 .deck-input {
   width: 100%;
@@ -75,13 +276,32 @@
   line-height: 1.6;
 }
 
+/* Les 4 actions sur une ligne, même sur téléphone. */
 .deck-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  max-width: 620px;
+  margin-bottom: 12px;
+}
+
+.deck-actions .btn {
+  min-width: 0;
+  padding: 0 6px;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deck-import {
+  display: grid;
   gap: 8px;
+  margin-bottom: 12px;
 }
 
 .deck-unknown {
+  margin-bottom: 12px;
   padding: 12px 14px;
   border-left: 3px solid var(--c-danger);
   background: rgba(255, 92, 122, 0.08);
@@ -100,30 +320,10 @@
   font-size: 12px;
 }
 
-/* Résultat */
-.deck-stats {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 16px;
-}
-
-.deck-wish {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 14px;
-  margin-bottom: 22px;
-  color: var(--c-cyan);
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-.deck-complete {
-  margin: 0 0 22px;
-  color: var(--c-yellow);
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  text-transform: uppercase;
+.deck-copy-failed {
+  margin: 0 0 12px;
+  color: var(--c-danger);
+  font-size: 0.9rem;
 }
 
 /* ---------- Ajout par le nom ---------- */
@@ -163,7 +363,12 @@
   cursor: pointer;
 }
 
-.deck-suggestions button:active {
+.deck-suggestions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.deck-suggestions button:active:not(:disabled) {
   background: var(--c-surface-3);
 }
 
@@ -211,18 +416,81 @@
   font-size: 20px;
 }
 
+.deck-suggestion-add.full {
+  width: auto;
+  padding: 0 6px;
+  border-color: var(--c-border-strong);
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
 .deck-no-match {
   padding: 12px;
   color: var(--c-muted);
   font-size: 14px;
 }
 
-.deck-import {
-  display: grid;
-  gap: 8px;
+/* ---------- Tri ---------- */
+
+.deck-sort {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 22px 0 10px;
+}
+
+.deck-sort .deck-label {
+  margin: 0 4px 0 0;
+}
+
+.deck-sort button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text-soft);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.deck-sort button.active {
+  border-color: var(--c-yellow);
+  color: var(--c-yellow);
 }
 
 /* ---------- Liste du deck ---------- */
+
+/* Un intertitre par groupe du tri (Légendes, Rouge, RAM 2, Coût 3…). */
+.deck-group + .deck-group {
+  margin-top: 18px;
+}
+
+.deck-group-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--c-border-soft);
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.deck-group-title small {
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+}
 
 .deck-list {
   display: grid;
@@ -234,7 +502,7 @@
 
 .deck-list li {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   padding: 6px 8px 6px 6px;
@@ -249,21 +517,49 @@
 
 .deck-row-card {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
   min-width: 0;
   color: inherit;
   text-decoration: none;
 }
 
-.deck-row-card img {
+.deck-row-thumb {
+  position: relative;
+  display: block;
+  width: 46px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+button.deck-row-thumb {
+  cursor: pointer;
+}
+
+.deck-row-thumb img {
+  display: block;
   width: 46px;
   aspect-ratio: 733 / 1024;
   object-fit: contain;
 }
 
-.deck-list li.missing .deck-row-card img {
+/* Pastille « ⇄ » : plusieurs versions au choix. */
+.deck-row-thumb span {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  border: 1px solid var(--c-cyan);
+  background: var(--c-bg);
+  color: var(--c-cyan);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.deck-list li.missing .deck-row-thumb img {
   filter: grayscale(0.7) brightness(0.75);
 }
 
@@ -284,6 +580,15 @@
 .deck-row-card small {
   color: var(--c-text-soft);
   font-size: 12px;
+}
+
+.deck-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
 }
 
 .deck-row-card em {
@@ -313,13 +618,313 @@
   cursor: pointer;
 }
 
+.deck-stepper button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .deck-stepper strong {
   font-family: var(--font-display);
   font-size: 18px;
 }
 
-.deck-copy-failed {
-  margin: 0;
-  color: var(--c-danger);
-  font-size: 0.9rem;
+/* ---------- Statistiques ---------- */
+
+.deck-stats-panel {
+  margin-top: 26px;
+}
+
+.deck-stats-panel summary {
+  margin-bottom: 14px;
+  color: var(--c-cyan);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.deck-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
+.deck-stats .stat {
+  padding: 14px 16px;
+}
+
+.deck-stats .stat strong {
+  font-size: 26px;
+}
+
+.deck-stats .stat small {
+  font-size: 11px;
+}
+
+.deck-wish {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 22px;
+  color: var(--c-cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.deck-complete {
+  margin: 0 0 22px;
+  color: var(--c-yellow);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.deck-chart {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.deck-chart .deck-label {
+  margin-bottom: 2px;
+}
+
+.deck-curve {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+}
+
+.deck-curve-bar {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  flex: 1 1 0;
+  max-width: 48px;
+  height: 100%;
+  text-align: center;
+}
+
+.deck-curve-bar i {
+  align-self: end;
+  min-height: 2px;
+  background: var(--c-cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.45);
+}
+
+.deck-curve-bar small,
+.deck-curve-bar span {
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.deck-curve-bar span {
+  padding-top: 4px;
+  color: var(--c-text-soft);
+  font-size: 12px;
+}
+
+.deck-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0 28px;
+}
+
+.deck-share {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 8px;
+  color: var(--c-text-soft);
+  font-size: 13px;
+}
+
+.deck-share i {
+  height: 8px;
+  background: var(--c-border-soft);
+}
+
+.deck-share b {
+  display: block;
+  height: 100%;
+  background: var(--c-cyan);
+}
+
+.deck-share small {
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .deck-tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .deck-share {
+    grid-template-columns: 84px minmax(0, 1fr) 24px;
+  }
+}
+
+/* ---------- Création guidée : choix des 3 Légendes ---------- */
+
+.legend-picks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 12px 10px;
+}
+
+.legend-pick {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    opacity 120ms ease;
+}
+
+.legend-pick:hover:not(:disabled) {
+  border-color: var(--c-cyan);
+}
+
+.legend-pick.selected {
+  border-color: var(--c-yellow);
+  background: var(--c-yellow-dim);
+}
+
+.legend-pick:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.legend-pick-image {
+  position: relative;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.legend-pick-image img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 733 / 1024;
+  object-fit: contain;
+}
+
+.legend-pick-image b {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  font-size: 15px;
+}
+
+.legend-pick strong {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.legend-pick small {
+  overflow: hidden;
+  color: var(--c-text-soft);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend-pick em {
+  color: var(--c-muted-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-style: normal;
+}
+
+.legend-pick.selected em {
+  color: var(--c-yellow);
+}
+
+/* Barre du bas : reste visible au-dessus du menu pendant qu'on fait défiler. */
+.legend-picks-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 22px;
+  padding: 12px 0;
+  border-top: 1px solid var(--c-border);
+  background: var(--c-bg);
+}
+
+.legend-picks-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.legend-picks-summary strong {
+  color: var(--c-text);
+  font-size: 13px;
+}
+
+.legend-picks-summary strong.ok {
+  color: var(--c-yellow);
+}
+
+.legend-picks-summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--c-text-soft);
+}
+
+.legend-picks-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 760px) {
+  .legend-picks-bar {
+    bottom: var(--nav-height);
+  }
+}
+
+@media (max-width: 480px) {
+  .legend-picks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 6px;
+  }
+
+  .legend-picks-actions {
+    flex: 1 1 100%;
+  }
+
+  .legend-picks-actions .btn {
+    flex: 1 1 0;
+  }
 }

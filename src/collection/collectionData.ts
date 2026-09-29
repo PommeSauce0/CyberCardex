@@ -1,5 +1,6 @@
 import type { CardCondition, CollectionItem, GradingCompany } from '../data/types';
 import { messages } from '../i18n';
+import { sanitizeDecks, type SavedDeck } from '../decks/deckStorage';
 import { createId } from '../storage/storage';
 
 export const CONDITIONS: CardCondition[] = [
@@ -92,23 +93,33 @@ export function sanitizeWishlist(raw: unknown): string[] {
 // ---------- Export / import ----------
 
 const EXPORT_APP = 'cybercardex';
-const EXPORT_VERSION = 1;
+/** v1 : collection + wishlist. v2 : + decks et réglages (v1 reste lisible). */
+const EXPORT_VERSION = 2;
 
-export type CollectionExport = {
+type CollectionExport = {
   app: typeof EXPORT_APP;
   version: number;
   exportedAt: string;
   collection: CollectionItem[];
   wishlist: string[];
+  decks: SavedDeck[];
+  settings?: unknown;
 };
 
-export function buildExport(items: CollectionItem[], wishlist: string[]): CollectionExport {
+export function buildExport(
+  items: CollectionItem[],
+  wishlist: string[],
+  decks: SavedDeck[] = [],
+  settings?: unknown,
+): CollectionExport {
   return {
     app: EXPORT_APP,
     version: EXPORT_VERSION,
     exportedAt: new Date().toISOString(),
     collection: items,
     wishlist,
+    decks,
+    settings,
   };
 }
 
@@ -116,6 +127,9 @@ export type ParsedImport = {
   collection: CollectionItem[];
   wishlist: string[];
   rejected: number;
+  /** Absents d'une sauvegarde v1 : on ne touche alors pas aux decks ni aux réglages. */
+  decks?: SavedDeck[];
+  settings?: Record<string, unknown>;
 };
 
 /** Accepte un export CyberCardex, ou un simple tableau d'exemplaires. */
@@ -129,6 +143,8 @@ export function parseImport(text: string): ParsedImport {
 
   let rawCollection: unknown;
   let rawWishlist: unknown = [];
+  let rawDecks: unknown;
+  let rawSettings: unknown;
 
   if (Array.isArray(data)) {
     rawCollection = data;
@@ -137,8 +153,14 @@ export function parseImport(text: string): ParsedImport {
     if (value.app !== undefined && value.app !== EXPORT_APP) {
       throw new Error(messages().importErrors.otherApp);
     }
+    // Sauvegarde d'une version plus récente de l'app : ses nouveaux champs seraient perdus.
+    if (typeof value.version === 'number' && value.version > EXPORT_VERSION) {
+      throw new Error(messages().importErrors.newerVersion);
+    }
     rawCollection = value.collection;
     rawWishlist = value.wishlist ?? [];
+    rawDecks = value.decks;
+    rawSettings = value.settings;
   } else {
     throw new Error(messages().importErrors.unknownFormat);
   }
@@ -152,6 +174,10 @@ export function parseImport(text: string): ParsedImport {
     collection,
     wishlist: sanitizeWishlist(rawWishlist),
     rejected: rawCollection.length - collection.length,
+    ...(Array.isArray(rawDecks) ? { decks: sanitizeDecks(rawDecks) } : {}),
+    ...(rawSettings && typeof rawSettings === 'object' && !Array.isArray(rawSettings)
+      ? { settings: rawSettings as Record<string, unknown> }
+      : {}),
   };
 }
 
@@ -170,7 +196,7 @@ function getCopyGroupKey(item: CollectionItem) {
   });
 }
 
-export type CopyGroup = {
+type CopyGroup = {
   key: string;
   items: CollectionItem[];
   representative: CollectionItem;
