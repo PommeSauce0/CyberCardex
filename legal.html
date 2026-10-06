@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CyberCardex · Informations légales</title>
+    <meta
+      name="description"
+      content="Mentions légales, confidentialité, crédits et licence de CyberCardex, projet de fan non officiel pour Cyberpunk TCG."
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <style>
+      /* Page autonome : aucune police ni ressource externe. */
+      :root {
+        --yellow: #fcee0a;
+        --cyan: #00f0ff;
+        --red: #ff003c;
+        --bg: #06070a;
+        --surface: #0d1015;
+        --border: #1c212a;
+        --text: #e9eef5;
+        --text-soft: #b8c0cc;
+        --muted: #7a8494;
+        --display: 'Rajdhani', 'Bahnschrift', 'DIN Alternate', 'Arial Narrow', system-ui, sans-serif;
+        --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text-soft);
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        text-wrap: pretty;
+      }
+
+      main {
+        width: min(100%, 820px);
+        margin: 0 auto;
+        padding: 32px 16px 48px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+        color: var(--text);
+        font-family: var(--display);
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+      }
+
+      .brand img {
+        display: block;
+        width: 34px;
+        height: 34px;
+      }
+
+      .brand span span {
+        color: var(--yellow);
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--cyan);
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: '// ';
+        color: var(--red);
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        color: var(--yellow);
+        font-family: var(--display);
+        font-size: clamp(32px, 7vw, 52px);
+        line-height: 1.05;
+        text-transform: uppercase;
+        text-wrap: balance;
+      }
+
+      .updated {
+        margin: 0 0 14px;
+        color: var(--muted);
+      }
+
+      .switch {
+        display: inline-block;
+        margin-bottom: 30px;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        color: var(--cyan);
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .switch:hover {
+        border-color: var(--cyan);
+      }
+
+      .toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 18px;
+        margin: 0 0 34px;
+        padding: 0;
+        list-style: none;
+        font-family: var(--mono);
+        font-size: 13px;
+      }
+
+      .toc li {
+        margin: 0;
+      }
+
+      section {
+        scroll-margin-top: 16px;
+        margin-bottom: 34px;
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--yellow);
+        font-family: var(--display);
+        font-size: 24px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      h3 {
+        margin: 20px 0 6px;
+        color: var(--cyan);
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      p,
+      ul {
+        margin: 0 0 10px;
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      a {
+        color: var(--cyan);
+        overflow-wrap: anywhere;
+      }
+
+      dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 8px 18px;
+        margin: 0 0 14px;
+      }
+
+      dt {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        line-height: 2;
+        text-transform: uppercase;
+      }
+
+      dd {
+        margin: 0;
+      }
+
+      .lang + .lang {
+        margin-top: 56px;
+        padding-top: 40px;
+        border-top: 2px solid var(--border);
+      }
+
+      footer {
+        padding: 20px 16px 28px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+      }
+
+      footer strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--cyan);
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      /* Téléphone : intitulé au-dessus de sa valeur. */
+      @media (max-width: 560px) {
+        dl {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+
+        dd {
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="brand" href="https://github.com/PommeSauce0/CyberCardex"><img src="favicon.svg" alt="" /><span>CYBER<span>CARDEX</span></span></a>
+
+      <!-- ===================== FRANÇAIS ===================== -->
+      <article class="lang" id="fr" lang="fr">
+        <p class="eyebrow">Informations légales</p>
+        <h1>Mentions légales, confidentialité et conditions</h1>
+        <p class="updated">Mise à jour le 5 octobre 2026.</p>
+        <a class="switch" href="#en" hreflang="en">English version ↓</a>
+
+        <ul class="toc">
+          <li><a href="#fr-mentions">Mentions légales</a></li>
+          <li><a href="#fr-confidentialite">Confidentialité</a></li>
+          <li><a href="#fr-conditions">Conditions</a></li>
+          <li><a href="#fr-credits">Crédits</a></li>
+          <li><a href="#fr-licence">Licence</a></li>
+        </ul>
+
+        <section id="fr-mentions">
+          <h2>Mentions légales</h2>
+          <dl>
+            <dt>Éditeur</dt>
+            <dd>PommeSauce0, particulier, pour un projet personnel gratuit et non commercial.</dd>
+            <dt>Directeur de la publication</dt>
+            <dd>PommeSauce0</dd>
+            <dt>Contact</dt>
+            <dd><a href="mailto:cybercardex@gmail.com">cybercardex@gmail.com</a></dd>
+            <dt>Hébergeur</dt>
+            <dd>
+              Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, États-Unis.
+              <a href="https://www.cloudflare.com">cloudflare.com</a>
+            </dd>
+            <dt>Code source</dt>
+            <dd>
+              <a href="https://github.com/PommeSauce0/CyberCardex">github.com/PommeSauce0/CyberCardex</a>
+            </dd>
+          </dl>
+          <p>
+            CyberCardex est édité à titre non professionnel par PommeSauce0, qui a choisi de ne pas publier son nom ni son adresse, comme la loi le permet aux éditeurs non professionnels. Les informations d’identification requises ont été communiquées à l’hébergeur.
+          </p>
+        </section>
+
+        <section id="fr-confidentialite">
+          <h2>Confidentialité</h2>
+          <p>
+            CyberCardex ne collecte ni ne stocke de données personnelles sur ses propres serveurs&nbsp;: il n’en a pas. Pas de compte, pas de publicité, pas de statistiques d’utilisation, pas de cookie de suivi. Certains services techniques contactés (voir plus bas) reçoivent néanmoins des informations techniques, comme ton adresse IP, nécessaires à leur fonctionnement. Cette page vaut pour le site et pour l’app Android.
+          </p>
+
+          <h3>Ce qui est enregistré, et où</h3>
+          <p>
+            Ta collection, ta wishlist, tes decks, tes classeurs, tes badges, tes échanges récents
+            et tes réglages restent sur ton appareil&nbsp;: dans le stockage de ton navigateur sur
+            le site, dans celui de l’app sur Android. Ce stockage sert seulement à faire fonctionner
+            CyberCardex, il ne demande donc pas de consentement. Pour tout effacer&nbsp;: Réglages →
+            Tout effacer, ou supprimer les données du site dans ton navigateur.
+          </p>
+          <p>
+            Sur Android, la sauvegarde automatique du téléphone peut copier ces données dans ton
+            compte Google, si tu l’as activée. Elles y restent privées&nbsp;: je n’y ai pas accès.
+          </p>
+
+          <h3>Cookies</h3>
+          <p>
+            CyberCardex ne dépose aucun cookie&nbsp;: ni publicité, ni mesure d’audience, ni suivi.
+            Il utilise seulement le stockage décrit plus haut, indispensable à son
+            fonctionnement&nbsp;: c’est pourquoi aucun bandeau de consentement n’est nécessaire. Si un
+            cookie non indispensable était ajouté un jour, ton accord serait demandé avant.
+          </p>
+
+          <h3>La caméra et les photos</h3>
+          <p>
+            Le scanner de cartes et le lecteur de QR code utilisent la caméra, ou une photo que tu choisis. L’image est analysée directement sur ton appareil&nbsp;: elle n’est ni enregistrée, ni envoyée nulle part.
+          </p>
+
+          <h3>Les services contactés</h3>
+          <ul>
+            <li>
+              Cloudflare, l’hébergeur du site, reçoit comme tout hébergeur ton adresse IP et des
+              informations techniques de connexion, pour afficher le site et le protéger des
+              attaques.
+            </li>
+            <li>
+              Google Play, si tu installes l’app depuis le Play Store. Google traite le
+              téléchargement et les mises à jour (l’app lui demande s’il en existe une) selon ses propres règles&nbsp;; il me transmet
+              seulement des chiffres globaux (nombre d’installations) et des rapports de plantage
+              anonymes.
+            </li>
+            <li>
+              GitHub, pour télécharger les prix du jour si Cardmarket est réglé sur «&nbsp;Lien +
+              prix&nbsp;», et pour vérifier les mises à jour de l’app installée depuis GitHub. GitHub
+              voit alors ton adresse IP, comme pour n’importe quel site.
+            </li>
+            <li>
+              Les liens vers Cardmarket, cyberpunktcg.com, Ko-fi (dons facultatifs) et les réseaux officiels ouvrent ces
+              sites, qui ont leurs propres règles.
+            </li>
+          </ul>
+          <p>
+            Cloudflare, Google et GitHub sont établis aux États-Unis&nbsp;: ces transferts sont encadrés par les garanties prévues par le RGPD. Ils reposent sur l’intérêt légitime à faire fonctionner et à protéger CyberCardex.
+          </p>
+
+          <h3>Les échanges par QR code</h3>
+          <p>
+            Le code d’échange contient seulement tes cartes possédées, tes doubles, ta wishlist et le pseudo que tu choisis. Il passe d’un appareil à l’autre quand on le scanne&nbsp;: CyberCardex ne le transmet ni ne le stocke sur aucun serveur.
+          </p>
+
+          <h3>Si tu m’écris</h3>
+          <p>
+            Ton message et ton adresse e-mail restent dans la boîte cybercardex@gmail.com (Google). Ils servent seulement à te répondre, et ne sont gardés que le temps de traiter ta demande. Je les supprime plus tôt si tu me le demandes.
+          </p>
+
+          <h3>Tes droits</h3>
+          <p>
+            Comme je ne détiens aucune donnée sur toi, à part tes éventuels e-mails, il n’y a rien
+            d’autre à consulter ni à supprimer de mon côté. Pour toute question, écris à
+            <a href="mailto:cybercardex@gmail.com">cybercardex@gmail.com</a>. Tu peux aussi saisir
+            la CNIL (<a href="https://www.cnil.fr">cnil.fr</a>).
+          </p>
+        </section>
+
+        <section id="fr-conditions">
+          <h2>Conditions d’utilisation</h2>
+          <ul>
+            <li>
+              CyberCardex est gratuit, sans compte, sans publicité et sans achat dans l’app&nbsp;: il
+              n’y a rien à payer, donc rien à rembourser.
+            </li>
+            <li>
+              Il est fourni tel quel. Les données des cartes, les traductions de fan et les prix
+              sont indicatifs et peuvent contenir des erreurs&nbsp;: les règles officielles et les
+              sites de vente font foi.
+            </li>
+            <li>
+              Tes données restent sur ton appareil, sous ta responsabilité&nbsp;: pense à faire des
+              sauvegardes (Réglages → Sauvegarde). Sans sauvegarde, elles sont perdues si tu
+              désinstalles l’app ou effaces les données du site.
+            </li>
+            <li>
+              Tu peux utiliser CyberCardex pour ton usage personnel, sans en faire un usage
+              commercial ni t’en servir pour porter atteinte aux droits d’autrui.
+            </li>
+            <li>
+              Dans les limites permises par la loi, PommeSauce0 ne peut être tenu responsable d’une
+              perte de données ou d’une décision prise d’après un prix affiché. Tes droits de
+              consommateur restent entiers.
+            </li>
+            <li>
+              Ces conditions relèvent du droit français. Elles peuvent évoluer&nbsp;: la date de mise
+              à jour figure en haut de cette page.
+            </li>
+          </ul>
+        </section>
+
+        <section id="fr-credits">
+          <h2>Crédits et propriété</h2>
+          <p>
+            CyberCardex est un projet de fan gratuit et non officiel, sans lien avec WeirdCo ni
+            CD&nbsp;PROJEKT.
+          </p>
+          <p>
+            Ce n’est pas une application officielle&nbsp;: elle n’est ni soutenue ni cautionnée par
+            WeirdCo ou CD PROJEKT RED.
+          </p>
+          <p>
+            Cyberpunk TCG est développé par WeirdCo en collaboration avec CD PROJEKT RED.
+            Cyberpunk, Cyberpunk 2077 et les visuels des cartes appartiennent à CD PROJEKT S.A. et
+            à leurs ayants droit.
+          </p>
+          <p>
+            Données et images des cartes&nbsp;: catalogue officiel de
+            <a href="https://cyberpunktcg.com">cyberpunktcg.com</a>.
+          </p>
+          <p>
+            Prix&nbsp;: Cardmarket, à titre indicatif. CyberCardex n’est pas affilié à Cardmarket.
+          </p>
+          <p>Le nom CyberCardex et le logo CC appartiennent à PommeSauce0.</p>
+          <p>
+            Tu es ayant droit et un contenu te pose problème&nbsp;? Écris à
+            <a href="mailto:cybercardex@gmail.com">cybercardex@gmail.com</a>&nbsp;: il sera retiré
+            rapidement.
+          </p>
+        </section>
+
+        <section id="fr-licence">
+          <h2>Licence</h2>
+          <p>
+            Le code de CyberCardex est public, sous licence PolyForm Noncommercial 1.0.0 depuis la
+            version 2.0.0&nbsp;: tu peux le lire, l’étudier, le modifier et le partager pour tout
+            usage non commercial, mais pas t’en servir pour gagner de l’argent (le texte de la
+            licence fait foi). Les versions 1.0.0 et 1.1.0 restent sous
+            licence MIT. Le nom, le logo et les données des cartes ne sont pas couverts par la
+            licence.
+          </p>
+          <p>
+            <a href="https://github.com/PommeSauce0/CyberCardex/blob/main/LICENSE">Lire la licence</a>
+          </p>
+          <p>
+            CyberCardex utilise des bibliothèques open source (React, Capacitor, jsQR, qrcode…), sous leurs propres licences.
+            <a href="licenses.txt">Voir les licences open source</a>
+          </p>
+        </section>
+      </article>
+
+      <!-- ===================== ENGLISH ===================== -->
+      <article class="lang" id="en" lang="en">
+        <p class="eyebrow">Legal information</p>
+        <h1>Legal notice, privacy and terms</h1>
+        <p class="updated">Updated on 5 October 2026.</p>
+        <a class="switch" href="#fr" hreflang="fr">Version française ↑</a>
+
+        <ul class="toc">
+          <li><a href="#en-notice">Legal notice</a></li>
+          <li><a href="#en-privacy">Privacy</a></li>
+          <li><a href="#en-terms">Terms</a></li>
+          <li><a href="#en-credits">Credits</a></li>
+          <li><a href="#en-license">License</a></li>
+        </ul>
+
+        <section id="en-notice">
+          <h2>Legal notice</h2>
+          <dl>
+            <dt>Publisher</dt>
+            <dd>PommeSauce0, a private individual, for a free and non-commercial personal project.</dd>
+            <dt>Publication director</dt>
+            <dd>PommeSauce0</dd>
+            <dt>Contact</dt>
+            <dd><a href="mailto:cybercardex@gmail.com">cybercardex@gmail.com</a></dd>
+            <dt>Host</dt>
+            <dd>
+              Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, United States.
+              <a href="https://www.cloudflare.com">cloudflare.com</a>
+            </dd>
+            <dt>Source code</dt>
+            <dd>
+              <a href="https://github.com/PommeSauce0/CyberCardex">github.com/PommeSauce0/CyberCardex</a>
+            </dd>
+          </dl>
+          <p>
+            CyberCardex is published on a non-professional basis by PommeSauce0, who has chosen not to publish their name or address, as the law allows non-professional publishers to do. The required identification information has been given to the host.
+          </p>
+        </section>
+
+        <section id="en-privacy">
+          <h2>Privacy</h2>
+          <p>
+            CyberCardex does not collect or store personal data on its own servers: it has none. No user accounts, no ads, no usage analytics, no tracking cookies. Some technical services it contacts (see below) do receive technical information, such as your IP address, as part of their normal operation. This page covers both the website and the Android app.
+          </p>
+
+          <h3>What is stored, and where</h3>
+          <p>
+            Your collection, wishlist, decks, binders, badges, recent trades and settings stay on
+            your device: in your browser’s storage on the website, in the app’s storage on Android.
+            This storage is only used to make CyberCardex work, so it needs no consent. To erase
+            everything: Settings → Erase everything, or clear the site’s data in your browser.
+          </p>
+          <p>
+            On Android, your phone’s automatic backup may copy this data to your Google account, if
+            you turned it on. It stays private there: I have no access to it.
+          </p>
+
+          <h3>Cookies</h3>
+          <p>
+            CyberCardex sets no cookies: no advertising, no audience measurement, no tracking. It
+            only uses the storage described above, which it needs to work: that is why no consent
+            banner is needed. If a non-essential cookie were ever added, your consent would be asked
+            first.
+          </p>
+
+          <h3>Camera and photos</h3>
+          <p>
+            The card scanner and the QR code reader use the camera, or a photo you pick. The image is analysed right on your device: it is never saved or sent anywhere.
+          </p>
+
+          <h3>Services contacted</h3>
+          <ul>
+            <li>
+              Cloudflare, the website’s host, receives your IP address and technical connection
+              information, like any host, to serve the site and protect it from attacks.
+            </li>
+            <li>
+              Google Play, if you install the app from the Play Store. Google handles the download
+              and updates (the app asks it whether one is available) under its own rules; it only gives me overall figures (number of installs)
+              and anonymous crash reports.
+            </li>
+            <li>
+              GitHub, to download the daily prices if Cardmarket is set to “Link + price”, and to
+              check for updates of the app installed from GitHub. GitHub then sees your IP address,
+              as with any website.
+            </li>
+            <li>
+              Links to Cardmarket, cyberpunktcg.com, Ko-fi (optional donations) and the official social networks open those
+              sites, which have their own rules.
+            </li>
+          </ul>
+          <p>
+            Cloudflare, Google and GitHub are based in the United States: these transfers are covered by the safeguards provided for by the GDPR. They rely on the legitimate interest in running and protecting CyberCardex.
+          </p>
+
+          <h3>QR code trades</h3>
+          <p>
+            The trade code only holds the cards you own, your doubles, your wishlist and the nickname you choose. It goes from one device to another when scanned: CyberCardex does not send or store it on any server.
+          </p>
+
+          <h3>If you write to me</h3>
+          <p>
+            Your message and e-mail address stay in the cybercardex@gmail.com mailbox (Google). They are only used to reply to you, and are kept only as long as needed to handle your request. I delete them sooner if you ask.
+          </p>
+
+          <h3>Your rights</h3>
+          <p>
+            Since I hold no data about you, apart from any e-mails you send, there is nothing else
+            to access or delete on my side. For any question, write to
+            <a href="mailto:cybercardex@gmail.com">cybercardex@gmail.com</a>. You can also contact
+            the CNIL, the French data protection authority (<a href="https://www.cnil.fr">cnil.fr</a>).
+          </p>
+        </section>
+
+        <section id="en-terms">
+          <h2>Terms of use</h2>
+          <ul>
+            <li>
+              CyberCardex is free, with no account, no ads and no in-app purchases: there is
+              nothing to pay, so nothing to refund.
+            </li>
+            <li>
+              It is provided as is. Card data, fan translations and prices are indicative and may
+              contain mistakes: the official rules and the selling sites prevail.
+            </li>
+            <li>
+              Your data stays on your device, under your responsibility: remember to make backups
+              (Settings → Backup). Without a backup, it is lost if you uninstall the app or clear the
+              site data.
+            </li>
+            <li>
+              You may use CyberCardex for personal use, not commercially, and not to infringe the
+              rights of others.
+            </li>
+            <li>
+              To the extent permitted by law, PommeSauce0 cannot be held liable for data loss or for
+              a decision based on a displayed price. Your consumer rights remain unaffected.
+            </li>
+            <li>
+              These terms are governed by French law. They may change: the update date is shown at
+              the top of this page.
+            </li>
+          </ul>
+        </section>
+
+        <section id="en-credits">
+          <h2>Credits and ownership</h2>
+          <p>
+            CyberCardex is a free, unofficial fan project, not affiliated with WeirdCo or
+            CD&nbsp;PROJEKT.
+          </p>
+          <p>It is not an official app: it is not endorsed or sponsored by WeirdCo or CD PROJEKT RED.</p>
+          <p>
+            Cyberpunk TCG is developed by WeirdCo in collaboration with CD PROJEKT RED. Cyberpunk,
+            Cyberpunk 2077 and the card artwork belong to CD PROJEKT S.A. and their respective
+            owners.
+          </p>
+          <p>
+            Card data and images: official catalogue from
+            <a href="https://cyberpunktcg.com">cyberpunktcg.com</a>.
+          </p>
+          <p>Prices: Cardmarket, for reference only. CyberCardex is not affiliated with Cardmarket.</p>
+          <p>The CyberCardex name and the CC logo belong to PommeSauce0.</p>
+          <p>
+            Are you a rights holder with an issue about some content? Write to
+            <a href="mailto:cybercardex@gmail.com">cybercardex@gmail.com</a> and it will be removed
+            quickly.
+          </p>
+        </section>
+
+        <section id="en-license">
+          <h2>License</h2>
+          <p>
+            The CyberCardex code is public, under the PolyForm Noncommercial 1.0.0 license since
+            version 2.0.0: you can read, study, modify and share it for any noncommercial use, but
+            not use it to make money (the license text prevails). Versions 1.0.0 and 1.1.0 remain under the MIT license. The name, the logo
+            and the card data are not covered by the license.
+          </p>
+          <p>
+            <a href="https://github.com/PommeSauce0/CyberCardex/blob/main/LICENSE">Read the license</a>
+          </p>
+          <p>
+            CyberCardex uses open source libraries (React, Capacitor, jsQR, qrcode…), under their own licenses.
+            <a href="licenses.txt">See the open source licenses</a>
+          </p>
+        </section>
+      </article>
+    </main>
+
+    <footer>
+      <strong>Projet de fan non officiel · Unofficial fan project</strong>
+      Sans lien avec WeirdCo ni CD PROJEKT · Not affiliated with WeirdCo or CD PROJEKT
+    </footer>
+  </body>
+</html>
